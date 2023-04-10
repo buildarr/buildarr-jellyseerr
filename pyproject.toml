@@ -1,0 +1,113 @@
+# pyproject.toml
+# Python project configuration.
+
+[build-system]
+requires = ["poetry-core>=1.3.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "buildarr-jellyseerr"
+version = "0.1.0"
+description = "Jellyseerr media request library application plugin for Sonarr"
+authors = ["Callum Dickinson <callum.dickinson.nz@gmail.com>"]
+license = "GPL-3.0-or-later"
+homepage = "https://buildarr.github.io/plugins/jellyseerr"
+repository = "https://github.com/buildarr/buildarr-jellyseerr"
+documentation = "https://buildarr.github.io/plugins/jellyseerr"
+keywords = [
+    "buildarr",
+    "jellyseerr",
+    "sonarr",
+    "radarr",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Pydantic",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Topic :: System :: Systems Administration",
+    "Typing :: Typed",
+]
+readme = "README.md"
+packages = [{include = "buildarr_jellyseerr"}]
+
+[tool.poetry.plugins."buildarr.plugins"]
+"jellyseerr" = "buildarr_jellyseerr.plugin:JellyseerrPlugin"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+buildarr = ">=0.4.0,<0.5.0"
+sonarr-py = ">=0.6.2"
+radarr-py = ">=0.2.2"
+buildarr-sonarr = {version = ">=0.4.1", optional = true}
+
+[tool.poetry.group.dev.dependencies]
+black = "23.3.0"
+mypy = "1.2.0"
+types-requests = "2.28.11.17"
+mkdocs = "1.4.2"
+mkdocstrings = {extras = ["python"], version = "0.21.2"}
+ruff = "0.0.261"
+
+[tool.poetry.extras]
+sonarr = ["buildarr-sonarr"]
+
+[tool.ruff]
+fix = true
+format = "grouped"
+target-version = "py38"
+line-length = 100
+select = [
+    "A",
+    "B",
+    "BLE",
+    "E",
+    "F",
+    "G",
+    "I",
+    "INP",
+    "N",
+    "PLC",
+    "PLE",
+    "PLR",
+    "PLW",
+    "PTH",
+    "RUF",
+    "S",
+    "T10",
+    "T20",
+    "W",
+    "YTT",
+]
+extend-select = ["COM812", "COM818", "UP009"]
+extend-ignore = [
+    "A003",
+    "B023",
+    "N805",
+    "N806",
+    "PLR0911",
+    "PLR0912",
+    "PLR0913",
+    "PLR0915",
+    "RUF001",
+]
+
+[tool.ruff.isort]
+lines-between-types = 1
+combine-as-imports = true
+required-imports = ["from __future__ import annotations"]
+
+[tool.black]
+line_length = 100
+
+[tool.mypy]
+python_version = "3.8"
+pretty = true
+
+[[tool.mypy.overrides]]
+module = [
+    "json5.*",
+    "sonarr.*",
+]
+ignore_missing_imports = true

@@ -1,0 +1,39 @@
+site_name: Buildarr Prowlarr Plugin
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+
+markdown_extensions:
+  - toc:
+      permalink: "#"
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+nav:
+  - Release Notes: "release-notes.md"
+  - Configuration:
+    - Host Configuration: "configuration/host.md"
+    - Settings:
+      - Indexers:
+        - Indexers: "configuration/settings/indexers/indexers.md"
+        - Proxies: "configuration/settings/indexers/proxies.md"
+      - Apps:
+        - Applications: "configuration/settings/apps/applications.md"
+        - Sync Profiles: "configuration/settings/apps/sync-profiles.md"
+      - Download Clients: "configuration/settings/download-clients.md"
+      - Notifications: "configuration/settings/notifications.md"
+      - Tags: "configuration/settings/tags.md"
+      - General: "configuration/settings/general.md"
+      - UI: "configuration/settings/ui.md"
+  - Buildarr: "https://buildarr.github.io"
+  - GitHub: "https://github.com/buildarr/buildarr-prowlarr"
+
+watch:
+  - buildarr_prowlarr
