@@ -193,14 +193,14 @@ class Sonarr(ArrBase):
         )
 
     def _render(
-            self,
-            api_key: str,
-            root_folders: Set[str],
-            quality_profile_ids: Mapping[str, int],
-            language_profile_ids: Mapping[str, int],
-            tag_ids: Mapping[str, int],
-            required: bool = True,
-        ) -> Self:
+        self,
+        api_key: str,
+        root_folders: Set[str],
+        quality_profile_ids: Mapping[str, int],
+        language_profile_ids: Mapping[str, int],
+        tag_ids: Mapping[str, int],
+        required: bool = True,
+    ) -> Self:
         rendered = self.copy(deep=True)
         rendered.api_key = api_key  # type: ignore[assignment]
         if required and rendered.root_folder not in root_folders:
@@ -230,22 +230,18 @@ class Sonarr(ArrBase):
             for tag in rendered.tags
         )
         if rendered.anime_quality_profile:
-            rendered.anime_quality_profile = (
-                    self._render_get_resource(  # type: ignore[assignment]
-                    resource_description="quality profile",
-                    resource_ids=quality_profile_ids,
-                    resource_ref=rendered.anime_quality_profile,
-                    required=required,
-                )
+            rendered.anime_quality_profile = self._render_get_resource(  # type: ignore[assignment]
+                resource_description="quality profile",
+                resource_ids=quality_profile_ids,
+                resource_ref=rendered.anime_quality_profile,
+                required=required,
             )
         if rendered.anime_language_profile:
-            rendered.anime_language_profile = (
-                self._render_get_resource(  # type: ignore[assignment]
-                    resource_description="language profile",
-                    resource_ids=language_profile_ids,
-                    resource_ref=rendered.anime_language_profile,
-                    required=required,
-                )
+            rendered.anime_language_profile = self._render_get_resource(  # type: ignore[assignment]
+                resource_description="language profile",
+                resource_ids=language_profile_ids,
+                resource_ref=rendered.anime_language_profile,
+                required=required,
             )
         rendered.anime_tags = set(
             self._render_get_resource(  # type: ignore[misc]
@@ -416,16 +412,14 @@ class SonarrSettings(JellyseerrConfigBase):
                 api_rootfolder["path"] for api_rootfolder in api_metadata["rootFolders"]
             )
             quality_profile_ids: Dict[str, int] = {
-                api_profile["name"]: api_profile["id"]
-                for api_profile in api_metadata["profiles"]
+                api_profile["name"]: api_profile["id"] for api_profile in api_metadata["profiles"]
             }
             language_profile_ids: Dict[str, int] = {
                 api_profile["name"]: api_profile["id"]
                 for api_profile in api_metadata["languageProfiles"]
             }
             tag_ids: Dict[str, int] = {
-                api_profile["label"]: api_profile["id"]
-                for api_profile in api_metadata["tags"]
+                api_profile["label"]: api_profile["id"] for api_profile in api_metadata["tags"]
             }
             rendered_service = service._render(
                 api_key=api_key,

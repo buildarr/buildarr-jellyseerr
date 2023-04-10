@@ -35,34 +35,34 @@ from ..types import JellyseerrConfigBase
 
 
 class Permission(BaseIntEnum):
-    NONE = 0
-    ADMIN = 2
-    MANAGE_SETTINGS = 4
-    MANAGE_USERS = 8
-    MANAGE_REQUESTS = 16
-    REQUEST = 32
-    VOTE = 64
-    AUTO_APPROVE = 128
-    AUTO_APPROVE_MOVIE = 256
-    AUTO_APPROVE_TV = 512
-    REQUEST_4K = 1024
-    REQUEST_4K_MOVIE = 2048
-    REQUEST_4K_TV = 4096
-    REQUEST_ADVANCED = 8192
-    REQUEST_VIEW = 16384
-    AUTO_APPROVE_4K = 32768
-    AUTO_APPROVE_4K_MOVIE = 65536
-    AUTO_APPROVE_4K_TV = 131072
-    REQUEST_MOVIE = 262144
-    REQUEST_TV = 524288
-    MANAGE_ISSUES = 1048576
-    VIEW_ISSUES = 2097152
-    CREATE_ISSUES = 4194304
-    AUTO_REQUEST = 8388608
-    AUTO_REQUEST_MOVIE = 16777216
-    AUTO_REQUEST_TV = 33554432
-    RECENT_VIEW = 67108864
-    WATCHLIST_VIEW = 134217728
+    none = 0
+    admin = 2
+    manage_settings = 4
+    manage_users = 8
+    manage_requests = 16
+    request = 32
+    vote = 64
+    auto_approve = 128
+    auto_approve_movie = 256
+    auto_approve_tv = 512
+    request_4k = 1024
+    request_4k_movie = 2048
+    request_4k_tv = 4096
+    request_advanced = 8192
+    request_view = 16384
+    auto_approve_4k = 32768
+    auto_approve_4k_movie = 65536
+    auto_approve_4k_tv = 131072
+    request_movie = 262144
+    request_tv = 524288
+    manage_issues = 1048576
+    view_issues = 2097152
+    create_issues = 4194304
+    auto_request = 8388608
+    auto_request_movie = 16777216
+    auto_request_tv = 33554432
+    recent_view = 67108864
+    watchlist_view = 134217728
 
     @classmethod
     def set_reduce(cls, permissions: Iterable[Permission]) -> Set[Permission]:
@@ -72,97 +72,97 @@ class Permission(BaseIntEnum):
     def set_decoder(cls, permissions_encoded: int) -> Set[Permission]:
         #
         if not permissions_encoded:
-            return {cls.NONE}
-        if permissions_encoded & cls.ADMIN:
-            return {cls.ADMIN}
+            return {cls.none}
+        if permissions_encoded & cls.admin:
+            return {cls.admin}
         #
         permissions: Set[Permission] = set()
         #
-        if permissions_encoded & cls.MANAGE_USERS:
-            permissions.add(cls.MANAGE_USERS)
+        if permissions_encoded & cls.manage_users:
+            permissions.add(cls.manage_users)
         #
-        if permissions_encoded & cls.MANAGE_ISSUES:
-            permissions.add(cls.MANAGE_ISSUES)
+        if permissions_encoded & cls.manage_issues:
+            permissions.add(cls.manage_issues)
         else:
-            for permission in (cls.CREATE_ISSUES, cls.VIEW_ISSUES):
+            for permission in (cls.create_issues, cls.view_issues):
                 if permissions_encoded & permission:
                     permissions.add(permission)
         #
-        if permissions_encoded & cls.MANAGE_REQUESTS:
-            permissions.add(cls.MANAGE_REQUESTS)
+        if permissions_encoded & cls.manage_requests:
+            permissions.add(cls.manage_requests)
         else:
             for permission in (
-                cls.REQUEST_ADVANCED,
-                cls.REQUEST_VIEW,
-                cls.RECENT_VIEW,
-                cls.WATCHLIST_VIEW,
+                cls.request_advanced,
+                cls.request_view,
+                cls.recent_view,
+                cls.watchlist_view,
             ):
                 if permissions_encoded & permission:
                     permissions.add(permission)
         #
-        if permissions_encoded & cls.REQUEST:
-            permissions.add(cls.REQUEST)
+        if permissions_encoded & cls.request:
+            permissions.add(cls.request)
         else:
-            for permission in (cls.REQUEST_MOVIE, cls.REQUEST_TV):
+            for permission in (cls.request_movie, cls.request_tv):
                 if permissions_encoded & permission:
                     permissions.add(permission)
         #
-        if permissions_encoded & cls.REQUEST_4K:
-            permissions.add(cls.REQUEST_4K)
+        if permissions_encoded & cls.request_4k:
+            permissions.add(cls.request_4k)
         else:
-            for permission in (cls.REQUEST_4K_MOVIE, cls.REQUEST_4K_TV):
+            for permission in (cls.request_4k_movie, cls.request_4k_tv):
                 if permissions_encoded & permission:
                     permissions.add(permission)
         #
-        if permissions_encoded & cls.AUTO_REQUEST:
-            if cls.REQUEST not in permissions:
-                cls._permission_error(cls.AUTO_REQUEST, cls.REQUEST)
-            permissions.add(cls.AUTO_REQUEST)
+        if permissions_encoded & cls.auto_request:
+            if cls.request not in permissions:
+                cls._permission_error(cls.auto_request, cls.request)
+            permissions.add(cls.auto_request)
         else:
-            if permissions_encoded & cls.AUTO_REQUEST_MOVIE:
-                if cls.REQUEST not in permissions or cls.REQUEST_MOVIE not in permissions:
-                    cls._permission_error(cls.AUTO_REQUEST_MOVIE, cls.REQUEST_MOVIE)
-                permissions.add(cls.AUTO_REQUEST_MOVIE)
-            if permissions_encoded & cls.AUTO_REQUEST_TV:
-                if cls.REQUEST not in permissions or cls.REQUEST_TV not in permissions:
-                    cls._permission_error(cls.AUTO_REQUEST_MOVIE, cls.REQUEST_TV)
-                permissions.add(cls.AUTO_REQUEST_TV)
+            if permissions_encoded & cls.auto_request_movie:
+                if cls.request not in permissions or cls.request_movie not in permissions:
+                    cls._permission_error(cls.auto_request_movie, cls.request_movie)
+                permissions.add(cls.auto_request_movie)
+            if permissions_encoded & cls.auto_request_tv:
+                if cls.request not in permissions or cls.request_tv not in permissions:
+                    cls._permission_error(cls.auto_request_tv, cls.request_tv)
+                permissions.add(cls.auto_request_tv)
         #
-        if permissions_encoded & cls.AUTO_APPROVE:
-            if cls.REQUEST not in permissions:
-                cls._permission_error(cls.AUTO_APPROVE, cls.REQUEST)
-            permissions.add(cls.AUTO_APPROVE)
+        if permissions_encoded & cls.auto_approve:
+            if cls.request not in permissions:
+                cls._permission_error(cls.auto_approve, cls.request)
+            permissions.add(cls.auto_approve)
         else:
-            if permissions_encoded & cls.AUTO_APPROVE_MOVIE:
-                if cls.REQUEST not in permissions or cls.REQUEST_MOVIE not in permissions:
-                    cls._permission_error(cls.AUTO_APPROVE_MOVIE, cls.REQUEST_MOVIE)
-                permissions.add(cls.AUTO_APPROVE_MOVIE)
-            if permissions_encoded & cls.AUTO_APPROVE_TV:
-                if cls.REQUEST not in permissions or cls.REQUEST_TV not in permissions:
-                    cls._permission_error(cls.AUTO_APPROVE_MOVIE, cls.REQUEST_TV)
-                permissions.add(cls.AUTO_APPROVE_TV)
+            if permissions_encoded & cls.auto_approve_movie:
+                if cls.request not in permissions or cls.request_movie not in permissions:
+                    cls._permission_error(cls.auto_approve_movie, cls.request_movie)
+                permissions.add(cls.auto_approve_movie)
+            if permissions_encoded & cls.auto_approve_tv:
+                if cls.request not in permissions or cls.request_tv not in permissions:
+                    cls._permission_error(cls.auto_approve_tv, cls.request_tv)
+                permissions.add(cls.auto_approve_tv)
         #
-        if permissions_encoded & cls.AUTO_APPROVE_4K:
-            if cls.REQUEST_4K not in permissions:
-                cls._permission_error(cls.AUTO_APPROVE_4K, cls.REQUEST_4K)
-            permissions.add(cls.AUTO_APPROVE_4K)
+        if permissions_encoded & cls.auto_approve_4k:
+            if cls.request_4k not in permissions:
+                cls._permission_error(cls.auto_approve_4k, cls.request_4k)
+            permissions.add(cls.auto_approve_4k)
         else:
-            if permissions_encoded & cls.AUTO_APPROVE_4K_MOVIE:
-                if cls.REQUEST_4K not in permissions or cls.REQUEST_4K_MOVIE not in permissions:
-                    cls._permission_error(cls.AUTO_APPROVE_4K_MOVIE, cls.REQUEST_4K_MOVIE)
-                permissions.add(cls.AUTO_APPROVE_4K_MOVIE)
-            if permissions_encoded & cls.AUTO_APPROVE_4K_TV:
-                if cls.REQUEST_4K not in permissions or cls.REQUEST_4K_TV not in permissions:
-                    cls._permission_error(cls.AUTO_APPROVE_4K_MOVIE, cls.REQUEST_4K_TV)
-                permissions.add(cls.AUTO_APPROVE_4K_TV)
+            if permissions_encoded & cls.auto_approve_4k_movie:
+                if cls.request_4k not in permissions or cls.request_4k_movie not in permissions:
+                    cls._permission_error(cls.auto_approve_4k_movie, cls.request_4k_movie)
+                permissions.add(cls.auto_approve_4k_movie)
+            if permissions_encoded & cls.auto_approve_4k_tv:
+                if cls.request_4k not in permissions or cls.request_4k_tv not in permissions:
+                    cls._permission_error(cls.auto_approve_4k_tv, cls.request_4k_tv)
+                permissions.add(cls.auto_approve_4k_tv)
         #
         return permissions
 
     @classmethod
     def _permission_error(cls, permission: Permission, required_permission: Permission) -> None:
         raise ValueError(
-            f"permission '{permission.name}' "
-            f"requires unset permission '{required_permission.name}'",
+            f"permission '{permission.to_name_str()}' "
+            f"requires unset permission '{required_permission.to_name_str()}'",
         )
 
     @classmethod
@@ -189,7 +189,7 @@ class JellyseerrUsersSettings(JellyseerrConfigBase):
     0 is unlimited.
     """
 
-    default_permissions: Set[Permission] = {Permission.REQUEST, Permission.MANAGE_ISSUES}
+    default_permissions: Set[Permission] = {Permission.request, Permission.manage_issues}
     """
     Get permission names from API schema (no camelCase)
     """

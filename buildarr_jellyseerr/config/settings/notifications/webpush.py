@@ -13,22 +13,18 @@
 
 
 """
-Jellyseerr plugin settings configuration.
+Jellyseerr plugin webpush notifications settings configuration.
 """
 
 
 from __future__ import annotations
 
-from ...types import JellyseerrConfigBase
-from .sonarr import SonarrSettings
-
-# from .radarr import RadarrSettings
+from .base import NotificationsSettingsBase
 
 
-class JellyseerrServicesSettings(JellyseerrConfigBase):
+class WebpushSettings(NotificationsSettingsBase):
     """
-    Jellyseerr services settings.
+    Jellyseerr browser push notification notifications settings.
     """
 
-    # radarr: RadarrSettings = RadarrSettings()
-    sonarr: SonarrSettings = SonarrSettings()
+    _type: str = "webpush"
