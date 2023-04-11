@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from http import HTTPStatus
 from logging import getLogger
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Dict, List, Optional, Set, Union, cast
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr
@@ -89,7 +89,7 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
             "/api/v1/auth/jellyfin",
             {
                 "username": self.username,
-                "password": self.password,
+                "password": cast(SecretStr, self.password).get_secret_value(),
                 "hostname": self.server_url,
                 "email": self.email_address,
             },
