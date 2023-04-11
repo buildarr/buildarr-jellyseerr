@@ -24,7 +24,7 @@ import json
 from datetime import datetime, timezone
 from http import HTTPStatus
 from logging import getLogger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 import requests
 
@@ -42,7 +42,7 @@ logger = getLogger(__name__)
 
 
 def api_get(
-    secrets: JellyseerrSecrets,
+    secrets: Union[JellyseerrSecrets, str],
     api_url: str,
     session: Optional[requests.Session] = None,
     use_api_key: bool = True,
@@ -60,13 +60,19 @@ def api_get(
         Response object
     """
 
-    url = f"{secrets.host_url}/{api_url.lstrip('/')}"
+    if isinstance(secrets, str):
+        host_url = secrets
+        api_key = None
+    else:
+        host_url = secrets.host_url
+        api_key = secrets.api_key.get_secret_value() if use_api_key else None
+    url = f"{host_url}/{api_url.lstrip('/')}"
     logger.debug("GET %s", url)
     if not session:
         session = requests.Session()
     res = session.get(
         url,
-        headers={"X-Api-Key": secrets.api_key.get_secret_value()} if use_api_key else None,
+        headers={"X-Api-Key": api_key} if api_key else None,
         timeout=state.config.buildarr.request_timeout,
     )
     res_json = res.json()
@@ -77,7 +83,7 @@ def api_get(
 
 
 def api_post(
-    secrets: JellyseerrSecrets,
+    secrets: Union[JellyseerrSecrets, str],
     api_url: str,
     req: Any = None,
     session: Optional[requests.Session] = None,
@@ -97,9 +103,15 @@ def api_post(
         Response object
     """
 
-    url = f"{secrets.host_url}/{api_url.lstrip('/')}"
+    if isinstance(secrets, str):
+        host_url = secrets
+        api_key = None
+    else:
+        host_url = secrets.host_url
+        api_key = secrets.api_key.get_secret_value() if use_api_key else None
+    url = f"{host_url}/{api_url.lstrip('/')}"
     logger.debug("POST %s <- req=%s", url, repr(req))
-    headers = {"X-Api-Key": secrets.api_key.get_secret_value()} if use_api_key else None
+    headers = {"X-Api-Key": api_key} if api_key else None
     if not state.dry_run:
         if not session:
             session = requests.Session()
@@ -119,7 +131,7 @@ def api_post(
 
 
 def api_put(
-    secrets: JellyseerrSecrets,
+    secrets: Union[JellyseerrSecrets, str],
     api_url: str,
     req: Any,
     session: Optional[requests.Session] = None,
@@ -139,9 +151,15 @@ def api_put(
         Response object
     """
 
-    url = f"{secrets.host_url}/{api_url.lstrip('/')}"
+    if isinstance(secrets, str):
+        host_url = secrets
+        api_key = None
+    else:
+        host_url = secrets.host_url
+        api_key = secrets.api_key.get_secret_value() if use_api_key else None
+    url = f"{host_url}/{api_url.lstrip('/')}"
     logger.debug("PUT %s <- req=%s", url, repr(req))
-    headers = {"X-Api-Key": secrets.api_key.get_secret_value()} if use_api_key else None
+    headers = {"X-Api-Key": api_key} if api_key else None
     if not state.dry_run:
         if not session:
             session = requests.Session()
@@ -161,7 +179,7 @@ def api_put(
 
 
 def api_delete(
-    secrets: JellyseerrSecrets,
+    secrets: Union[JellyseerrSecrets, str],
     api_url: str,
     session: Optional[requests.Session] = None,
     use_api_key: bool = True,
@@ -176,9 +194,15 @@ def api_delete(
         expected_status_code (HTTPStatus): Expected response status. Defaults to `200 OK`.
     """
 
-    url = f"{secrets.host_url}/{api_url.lstrip('/')}"
+    if isinstance(secrets, str):
+        host_url = secrets
+        api_key = None
+    else:
+        host_url = secrets.host_url
+        api_key = secrets.api_key.get_secret_value() if use_api_key else None
+    url = f"{host_url}/{api_url.lstrip('/')}"
     logger.debug("DELETE %s", url)
-    headers = {"X-Api-Key": secrets.api_key.get_secret_value()} if use_api_key else None
+    headers = {"X-Api-Key": api_key} if api_key else None
     if not state.dry_run:
         if not session:
             session = requests.Session()

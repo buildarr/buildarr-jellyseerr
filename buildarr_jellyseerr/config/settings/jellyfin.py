@@ -55,15 +55,10 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
 
     libraries: Set[NonEmptyStr] = set()
 
-    # These need to be changed in the Jellyseerr configuration file (`settings.json`).
-    # base_url: AnyHttpUrl = Field("http://my.jellyfin.host", alias="hostname")
-    # admin_username: NonEmptyStr = Field("admin", alias="admin_user")
-    # admin_password: SecretStr = Field("password", min_length=1, alias="admin_pass")
+    def _is_initialized(self, host_url: str) -> bool:
+        return api_get(host_url, "/api/v1/settings/public")["initialized"]
 
-    def _is_initialized(self, secrets: JellyseerrSecrets) -> bool:
-        return api_get(secrets, "/api/v1/settings/public", use_api_key=False)["initialized"]
-
-    def _initialize(self, tree: str, secrets: JellyseerrSecrets) -> None:
+    def _initialize(self, tree: str, host_url: str) -> None:
         # Check if we have all the information we need to initialise it.
         logger.info("Checking if required attributes are defined")
         missing_attrs: List[str] = []
@@ -90,7 +85,7 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
             logger.info("Authenticating Jellyseerr with Jellyfin")
             try:
                 api_post(
-                    secrets,
+                    host_url,
                     "/api/v1/auth/jellyfin",
                     {
                         "username": self.username,
@@ -99,7 +94,6 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
                         "email": self.email_address,
                     },
                     session=session,
-                    use_api_key=False,
                     expected_status_code=HTTPStatus.OK,
                 )
             except JellyseerrAPIError as err:
@@ -117,10 +111,9 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
             # Ensure the Jellyfin libraries are synced, and fetch the library metadata.
             logger.info("Syncing Jellyfin libraries to Jellyseerr")
             api_libraries = api_get(
-                secrets,
+                host_url,
                 "/api/v1/settings/jellyfin/library?sync=true",
                 session=session,
-                use_api_key=False,
             )
             logger.info("Finished syncing Jellyfin libraries to Jellyseerr")
             # Enable the selected libraries in the configuration.
@@ -141,7 +134,7 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
                         ")",
                     )
             api_get(
-                secrets,
+                host_url,
                 f"/api/v1/settings/jellyfin/library?enable={','.join(enabled_library_ids)}",
                 session=session,
                 use_api_key=False,
@@ -150,7 +143,7 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
             # Finalise the initialisation of the Jellyseerr instance.
             logger.info("Finalising initialisation of Jellyseerr instance")
             api_post(
-                secrets,
+                host_url,
                 "/api/v1/settings/initialize",
                 session=session,
                 use_api_key=False,
