@@ -62,7 +62,7 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
 
     def _initialize(self, tree: str, secrets: JellyseerrSecrets) -> None:
         # Check if we have all the information we need to initialise it.
-        logger.debug("Checking if required attributes are defined")
+        logger.info("Checking if required attributes are defined")
         missing_attrs: List[str] = []
         for attr_name in ("server_url", "username", "password", "email_address"):
             attr_value: Optional[Union[str, SecretStr]] = getattr(self, attr_name)
@@ -80,10 +80,10 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
                 "or set the following attributes so Buildarr can automatically initialise it: "
                 f"{', '.join(repr(f'{tree}.{an}') for an in missing_attrs)}. ",
             )
-        logger.debug("Finished checking if required attributes are defined")
+        logger.info("Finished checking if required attributes are defined")
         # Configure the Jellyfin instance on Jellyseerr.
         # TODO: Make this idempotent, if it needs it.
-        logger.debug("Authenticating Jellyseerr with Jellyfin")
+        logger.info("Authenticating Jellyseerr with Jellyfin")
         api_post(
             secrets,
             "/api/v1/auth/jellyfin",
@@ -95,13 +95,13 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
             },
             expected_status_code=HTTPStatus.OK,
         )
-        logger.debug("Finished authenticating Jellyseerr with Jellyfin")
+        logger.info("Finished authenticating Jellyseerr with Jellyfin")
         # Ensure the Jellyfin libraries are synced, and fetch the library metadata.
-        logger.debug("Syncing Jellyfin libraries to Jellyseerr")
+        logger.info("Syncing Jellyfin libraries to Jellyseerr")
         api_libraries = api_get(secrets, "/api/v1/settings/jellyfin/library?sync=true")
-        logger.debug("Finished syncing Jellyfin libraries to Jellyseerr")
+        logger.info("Finished syncing Jellyfin libraries to Jellyseerr")
         # Enable the selected libraries in the configuration.
-        logger.debug(
+        logger.info(
             "Enabling Jellyfin libraries in Jellyseerr: %s",
             ", ".join(repr(library_name) for library_name in self.libraries),
         )
@@ -119,11 +119,11 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
             secrets,
             f"/api/v1/settings/jellyfin/library?enable={','.join(enabled_library_ids)}",
         )
-        logger.debug("Finished enabling Jellyfin libraries in Jellyseerr:")
+        logger.info("Finished enabling Jellyfin libraries in Jellyseerr:")
         # Finalise the initialisation of the Jellyseerr instance.
-        logger.debug("Finalising initialisation of Jellyseerr instance")
+        logger.info("Finalising initialisation of Jellyseerr instance")
         api_post(secrets, "/api/v1/settings/initialize", expected_status_code=HTTPStatus.OK)
-        logger.debug("Finished finalising initialisation of Jellyseerr instance")
+        logger.info("Finished finalising initialisation of Jellyseerr instance")
 
     @classmethod
     def _get_remote_map(

@@ -23,7 +23,7 @@ import functools
 import operator
 
 from http import HTTPStatus
-from typing import Iterable, List, Mapping, Set
+from typing import Dict, Iterable, List, Set
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseIntEnum
@@ -180,15 +180,19 @@ class JellyseerrUsersSettings(JellyseerrConfigBase):
 
     enable_new_jellyfin_signin: bool = True
 
-    global_movie_request_limit: int = Field(None, ge=0)
+    global_movie_request_limit: int = Field(0, ge=0, le=100, alias="movie_quota_limit")
     """
     0 is unlimited.
     """
 
-    global_series_request_limit: int = Field(None, ge=0)
+    global_movie_request_days: int = Field(7, ge=1, le=100, alias="movie_quota_days")
+
+    global_series_request_limit: int = Field(0, ge=0, le=100, alias="series_quota_limit")
     """
     0 is unlimited.
     """
+
+    global_series_request_days: int = Field(7, ge=1, le=100, alias="series_quota_days")
 
     default_permissions: Set[Permission] = {Permission.request, Permission.manage_issues}
     """
@@ -200,48 +204,14 @@ class JellyseerrUsersSettings(JellyseerrConfigBase):
         return Permission.set_reduce(value)
 
     @classmethod
-    def _get_remote_map(
-        cls,
-        movie_quota_days: int = 0,
-        series_quota_days: int = 0,
-    ) -> List[RemoteMapEntry]:
+    def _get_remote_map(cls) -> List[RemoteMapEntry]:
         return [
             ("enable_local_signin", "localLogin", {}),
             ("enable_new_jellyfin_signin", "newPlexLogin", {}),
-            (
-                "global_movie_request_limit",
-                "defaultQuotas",
-                {
-                    "decoder": lambda v: v["movie"]["quotaLimit"],
-                    "root_encoder": lambda vs: {
-                        "movie": {
-                            "quotaDays": movie_quota_days,
-                            "quotaLimit": vs.global_movie_request_limit,
-                        },
-                        "tv": {
-                            "quotaDays": series_quota_days,
-                            "quotaLimit": vs.global_series_request_limit,
-                        },
-                    },
-                },
-            ),
-            (
-                "global_series_request_limit",
-                "defaultQuotas",
-                {
-                    "decoder": lambda v: v["tv"]["quotaLimit"],
-                    "root_encoder": lambda vs: {
-                        "movie": {
-                            "quotaDays": movie_quota_days,
-                            "quotaLimit": vs.global_movie_request_limit,
-                        },
-                        "tv": {
-                            "quotaDays": series_quota_days,
-                            "quotaLimit": vs.global_series_request_limit,
-                        },
-                    },
-                },
-            ),
+            ("global_movie_request_limit", "movieQuotaLimit", {}),
+            ("global_movie_request_days", "movieQuotadays", {}),
+            ("global_series_request_limit", "tvQuotaLimit", {}),
+            ("global_series_request_days", "tvQuotaDays", {}),
             (
                 "default_permissions",
                 "defaultPermissions",
@@ -254,8 +224,20 @@ class JellyseerrUsersSettings(JellyseerrConfigBase):
 
     @classmethod
     def from_remote(cls, secrets: JellyseerrSecrets) -> Self:
+        remote_attrs = api_get(secrets, "/api/v1/settings/main")
+        default_quotas: Dict[str, Dict[str, int]] = remote_attrs["defaultQuotas"]
+        del remote_attrs["defaultQuotas"]
+        for category in ("movie", "tv"):
+            remote_attrs[f"{category}QuotaLimit"] = default_quotas[category].get(
+                "quotaLimit",
+                cls.__fields__[f"global_{category}_request_limit"].default,
+            )
+            remote_attrs[f"{category}QuotaDays"] = default_quotas[category].get(
+                "quotaDays",
+                cls.__fields__[f"global_{category}_request_days"].default,
+            )
         return cls(
-            **cls.get_local_attrs(cls._get_remote_map(), api_get(secrets, "/api/v1/settings/main")),
+            **cls.get_local_attrs(cls._get_remote_map(), remote_attrs),
         )
 
     def update_remote(
@@ -265,19 +247,23 @@ class JellyseerrUsersSettings(JellyseerrConfigBase):
         remote: Self,
         check_unmanaged: bool = False,
     ) -> bool:
-        default_quotas: Mapping[str, Mapping[str, int]] = api_get(
-            secrets,
-            "/api/v1/settings/main",
-        )["defaultQuotas"]
         changed, remote_attrs = self.get_update_remote_attrs(
             tree,
             remote,
-            self._get_remote_map(
-                movie_quota_days=default_quotas["movie"]["quotaDays"],
-                series_quota_days=default_quotas["tv"]["quotaDays"],
-            ),
+            self._get_remote_map(),
             check_unmanaged=check_unmanaged,
+            set_unchanged=True,
         )
+        remote_attrs["defaultQuotas"] = {
+            category: {
+                "quotaLimit": remote_attrs[f"{category}QuotaLimit"],
+                "quotaDays": remote_attrs[f"{category}QuotaDays"],
+            }
+            for category in ("movie", "tv")
+        }
+        for category in ("movie", "tv"):
+            del remote_attrs[f"{category}QuotaLimit"]
+            del remote_attrs[f"{category}QuotaDays"]
         if changed:
             api_post(
                 secrets,
