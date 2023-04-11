@@ -21,14 +21,17 @@ from __future__ import annotations
 
 from http import HTTPStatus
 from logging import getLogger
+from time import sleep
 from typing import Any, Dict, List, Optional, Set, Union, cast
 
 from buildarr.config import RemoteMapEntry
+from buildarr.state import state
 from buildarr.types import NonEmptyStr
 from pydantic import AnyHttpUrl, EmailStr, Field, SecretStr
 from typing_extensions import Self
 
 from ...api import api_get, api_post
+from ...exceptions import JellyseerrAPIError
 from ...secrets import JellyseerrSecrets
 from ..types import JellyseerrConfigBase
 
@@ -81,21 +84,68 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
                 f"{', '.join(repr(f'{tree}.{an}') for an in missing_attrs)}. ",
             )
         logger.info("Finished checking if required attributes are defined")
-        # Configure the Jellyfin instance on Jellyseerr.
-        # TODO: Make this idempotent, if it needs it.
-        logger.info("Authenticating Jellyseerr with Jellyfin")
-        api_post(
-            secrets,
-            "/api/v1/auth/jellyfin",
-            {
-                "username": self.username,
-                "password": cast(SecretStr, self.password).get_secret_value(),
-                "hostname": self.server_url,
-                "email": self.email_address,
-            },
-            expected_status_code=HTTPStatus.OK,
-        )
-        logger.info("Finished authenticating Jellyseerr with Jellyfin")
+        # Get required attributes.
+        server_url = cast(str, self.server_url)
+        username = cast(str, self.username)
+        password = cast(SecretStr, self.password).get_secret_value()
+        # Configure the Jellyfin instance on Jellyseerr, if not already configured.
+        logger.info("Checking if Jellyseerr is authenticated with Jellyfin")
+        try:
+            api_jellyfin = api_get(secrets, "/api/v1/auth/jellyfin")
+            api_jellyfin_server_url: str = api_jellyfin["hostname"]
+            api_jellyfin_username: str = api_jellyfin["adminUser"]
+            api_jellyfin_password: str = api_jellyfin["adminPass"]
+            if (
+                api_jellyfin_server_url != server_url
+                or api_jellyfin_username != username
+                or api_jellyfin_password != password
+            ):
+                raise RuntimeError(
+                    "Partially initialised Jellyseer instance "
+                    "has unexpected Jellyfin configuration:\n"
+                    f"  - server_url: expected = {repr(self.server_url)}, "
+                    f"actual = {repr(api_jellyfin_server_url)}\n"
+                    f"  - username: expected = {repr(username)}, "
+                    f"actual = {repr(api_jellyfin_username)}\n"
+                    f"  - password: expected = {repr(password)}, "
+                    f"actual = {repr(api_jellyfin_password)}\n"
+                    "Check that the configuration is correct, "
+                    "or recreate the Jellyseerr instance and try again.",
+                )
+            logger.info("Jellyseer is already authenticated with Jellyfin")
+        except JellyseerrAPIError as err:
+            if err.status_code != HTTPStatus.FORBIDDEN:
+                raise
+            logger.info("Jellyseerr is not yet configured with Jellyfin")
+            logger.info("Authenticating Jellyseerr with Jellyfin")
+            logger.info("Uploading Jellyfin authentication credentials to Jellyseerr")
+            api_post(
+                secrets,
+                "/api/v1/auth/jellyfin",
+                {
+                    "username": self.username,
+                    "password": cast(SecretStr, self.password).get_secret_value(),
+                    "hostname": self.server_url,
+                    "email": self.email_address,
+                },
+                expected_status_code=HTTPStatus.OK,
+            )
+            logger.info("Finished uploading Jellyfin authentication credentials to Jellyseerr")
+            logger.info("Waiting for Jellyseerr to connect to Jellyfin")
+            timeout = int(state.config.buildarr.request_timeout)
+            for _ in range(timeout):
+                try:
+                    api_get(secrets, "/api/v1/auth/jellyfin")
+                    break
+                except JellyseerrAPIError as err:
+                    if err.status_code != HTTPStatus.FORBIDDEN:
+                        raise
+                    sleep(1)
+            else:
+                raise RuntimeError(
+                    f"Waiting for Jellyseerr to connect to Jellyfin timed out ({timeout} seconds)",
+                )
+            logger.info("Finished authenticating Jellyseerr with Jellyfin")
         # Ensure the Jellyfin libraries are synced, and fetch the library metadata.
         logger.info("Syncing Jellyfin libraries to Jellyseerr")
         api_libraries = api_get(secrets, "/api/v1/settings/jellyfin/library?sync=true")
