@@ -75,7 +75,7 @@ def api_get(
 def api_post(
     secrets: JellyseerrSecrets,
     api_url: str,
-    req: Any,
+    req: Any = None,
     expected_status_code: HTTPStatus = HTTPStatus.CREATED,
 ) -> Any:
     """
@@ -98,8 +98,8 @@ def api_post(
         res = requests.post(
             url,
             headers=headers,
-            json=req,
             timeout=state.config.buildarr.request_timeout,
+            **({"json": req} if req is not None else {}),
         )
     else:
         res = _create_dryrun_response("POST", url, content=json.dumps(req))

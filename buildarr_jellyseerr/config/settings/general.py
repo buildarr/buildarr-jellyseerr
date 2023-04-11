@@ -19,6 +19,7 @@ Jellyseerr plugin general settings configuration.
 
 from __future__ import annotations
 
+from http import HTTPStatus
 from typing import List, Optional, Set
 
 from buildarr.config import RemoteMapEntry
@@ -120,6 +121,11 @@ class JellyseerrGeneralSettings(JellyseerrConfigBase):
             check_unmanaged=check_unmanaged,
         )
         if changed:
-            api_post(secrets, "/api/v1/settings/main", remote_attrs)
+            api_post(
+                secrets,
+                "/api/v1/settings/main",
+                remote_attrs,
+                expected_status_code=HTTPStatus.OK,
+            )
             return True
         return False

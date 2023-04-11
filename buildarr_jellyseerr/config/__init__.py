@@ -142,6 +142,12 @@ class JellyseerrInstanceConfig(_JellyseerrInstanceConfig):
     Configuration options for Jellyseerr itself are set within this structure.
     """
 
+    def is_initialized(self, secrets: JellyseerrSecrets) -> bool:
+        return self.settings.jellyfin._is_initialized(secrets)
+
+    def initialize(self, tree: str, secrets: JellyseerrSecrets) -> None:
+        self.settings.jellyfin._initialize(f"{tree}.settings.jellyfin", secrets)
+
     @classmethod
     def from_remote(cls, secrets: JellyseerrSecrets) -> Self:
         return cls(

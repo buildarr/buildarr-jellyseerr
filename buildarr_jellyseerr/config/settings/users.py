@@ -22,6 +22,7 @@ from __future__ import annotations
 import functools
 import operator
 
+from http import HTTPStatus
 from typing import Iterable, List, Mapping, Set
 
 from buildarr.config import RemoteMapEntry
@@ -278,6 +279,11 @@ class JellyseerrUsersSettings(JellyseerrConfigBase):
             check_unmanaged=check_unmanaged,
         )
         if changed:
-            api_post(secrets, "/api/v1/settings/main", remote_attrs)
+            api_post(
+                secrets,
+                "/api/v1/settings/main",
+                remote_attrs,
+                expected_status_code=HTTPStatus.OK,
+            )
             return True
         return False
