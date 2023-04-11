@@ -158,12 +158,12 @@ class EmailSettings(NotificationsSettingsBase):
             (
                 "smtp_username",
                 "authUser",
-                {"decoder": lambda v: v or None, "encoder": lambda v: v or ""},
+                {"optional": True, "decoder": lambda v: v or None, "encoder": lambda v: v or ""},
             ),
             (
                 "smtp_password",
                 "authPass",
-                {"decoder": lambda v: v or None, "encoder": lambda v: v or ""},
+                {"optional": True, "decoder": lambda v: v or None, "encoder": lambda v: v or ""},
             ),
             (
                 "pgp_private_key",
