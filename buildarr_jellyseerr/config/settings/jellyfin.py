@@ -139,9 +139,9 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
                 session=session,
                 use_api_key=False,
             )
-            logger.info("Finished enabling Jellyfin libraries in Jellyseerr:")
+            logger.info("Finished enabling Jellyfin libraries in Jellyseerr")
             # Finalise the initialisation of the Jellyseerr instance.
-            logger.info("Finalising initialisation of Jellyseerr instance")
+            logger.info("Finalising initialisation")
             api_post(
                 host_url,
                 "/api/v1/settings/initialize",
@@ -149,7 +149,7 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
                 use_api_key=False,
                 expected_status_code=HTTPStatus.OK,
             )
-            logger.info("Finished finalising initialisation of Jellyseerr instance")
+            logger.info("Finished finalising initialisation")
 
     @classmethod
     def _get_remote_map(
