@@ -227,14 +227,14 @@ class JellyseerrUsersSettings(JellyseerrConfigBase):
         remote_attrs = api_get(secrets, "/api/v1/settings/main")
         default_quotas: Dict[str, Dict[str, int]] = remote_attrs["defaultQuotas"]
         del remote_attrs["defaultQuotas"]
-        for category in ("movie", "tv"):
+        for category, local_category in (("movie", "movie"), ("tv", "series")):
             remote_attrs[f"{category}QuotaLimit"] = default_quotas[category].get(
                 "quotaLimit",
-                cls.__fields__[f"global_{category}_request_limit"].default,
+                cls.__fields__[f"global_{local_category}_request_limit"].default,
             )
             remote_attrs[f"{category}QuotaDays"] = default_quotas[category].get(
                 "quotaDays",
-                cls.__fields__[f"global_{category}_request_days"].default,
+                cls.__fields__[f"global_{local_category}_request_days"].default,
             )
         return cls(
             **cls.get_local_attrs(cls._get_remote_map(), remote_attrs),
