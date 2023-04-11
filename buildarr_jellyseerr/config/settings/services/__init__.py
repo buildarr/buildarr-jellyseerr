@@ -20,9 +20,8 @@ Jellyseerr plugin settings configuration.
 from __future__ import annotations
 
 from ...types import JellyseerrConfigBase
+from .radarr import RadarrSettings
 from .sonarr import SonarrSettings
-
-# from .radarr import RadarrSettings
 
 
 class JellyseerrServicesSettings(JellyseerrConfigBase):
@@ -30,5 +29,5 @@ class JellyseerrServicesSettings(JellyseerrConfigBase):
     Jellyseerr services settings.
     """
 
-    # radarr: RadarrSettings = RadarrSettings()
+    radarr: RadarrSettings = RadarrSettings()
     sonarr: SonarrSettings = SonarrSettings()
