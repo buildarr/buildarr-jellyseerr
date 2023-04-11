@@ -91,7 +91,7 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
         # Configure the Jellyfin instance on Jellyseerr, if not already configured.
         logger.info("Checking if Jellyseerr is authenticated with Jellyfin")
         try:
-            api_jellyfin = api_get(secrets, "/api/v1/auth/jellyfin")
+            api_jellyfin = api_get(secrets, "/api/v1/settings/jellyfin")
             api_jellyfin_server_url: str = api_jellyfin["hostname"]
             api_jellyfin_username: str = api_jellyfin["adminUser"]
             api_jellyfin_password: str = api_jellyfin["adminPass"]
@@ -135,7 +135,7 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
             timeout = int(state.config.buildarr.request_timeout)
             for _ in range(timeout):
                 try:
-                    api_get(secrets, "/api/v1/auth/jellyfin")
+                    api_get(secrets, "/api/v1/settings/jellyfin")
                     break
                 except JellyseerrAPIError as err:
                     if err.status_code != HTTPStatus.FORBIDDEN:
