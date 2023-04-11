@@ -82,10 +82,10 @@ class JellyseerrSecrets(_JellyseerrSecrets):
 
     def test(self) -> bool:
         try:
-            api_get(self, "/api/v1/status")
+            api_get(self, "/api/v1/settings/main")
             return True
         except JellyseerrAPIError as err:
-            if err.status_code == HTTPStatus.UNAUTHORIZED:
+            if err.status_code in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FORBIDDEN):
                 return False
             else:
                 raise
