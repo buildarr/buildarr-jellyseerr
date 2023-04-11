@@ -68,7 +68,7 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
             attr_value: Optional[Union[str, SecretStr]] = getattr(self, attr_name)
             if isinstance(attr_value, SecretStr):
                 attr_value = attr_value.get_secret_value()
-            if not attr_value or attr_value.strip():
+            if not attr_value or not attr_value.strip():
                 logger.debug("  - %s.%s: NOT DEFINED", tree, attr_name)
                 missing_attrs.append(attr_name)
             else:
@@ -77,7 +77,7 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
             raise ValueError(
                 "Unable to initialise Jellyseerr instance, required attributes are missing. "
                 "Either manually initialise Jellyseerr yourself, "
-                "or set the following parameters so Buildarr can automatically initialise it: "
+                "or set the following attributes so Buildarr can automatically initialise it: "
                 f"{', '.join(repr(f'{tree}.{an}') for an in missing_attrs)}. ",
             )
         logger.debug("Finished checking if required attributes are defined")
