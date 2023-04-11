@@ -209,7 +209,7 @@ class JellyseerrUsersSettings(JellyseerrConfigBase):
             ("enable_local_signin", "localLogin", {}),
             ("enable_new_jellyfin_signin", "newPlexLogin", {}),
             ("global_movie_request_limit", "movieQuotaLimit", {}),
-            ("global_movie_request_days", "movieQuotadays", {}),
+            ("global_movie_request_days", "movieQuotaDays", {}),
             ("global_series_request_limit", "tvQuotaLimit", {}),
             ("global_series_request_days", "tvQuotaDays", {}),
             (
