@@ -68,7 +68,7 @@ class EmailSettings(NotificationsSettingsBase):
 
     require_user_email: bool = Field(False, alias="user_email_required")
 
-    sender_name: Optional[str] = None
+    sender_name: Optional[str] = "Jellyseerr"
 
     sender_address: Optional[EmailStr] = None
 
