@@ -44,6 +44,8 @@ logger = getLogger(__name__)
 def api_get(
     secrets: JellyseerrSecrets,
     api_url: str,
+    session: Optional[requests.Session] = None,
+    use_api_key: bool = True,
     expected_status_code: HTTPStatus = HTTPStatus.OK,
 ) -> Any:
     """
@@ -60,9 +62,11 @@ def api_get(
 
     url = f"{secrets.host_url}/{api_url.lstrip('/')}"
     logger.debug("GET %s", url)
-    res = requests.get(
+    if not session:
+        session = requests.Session()
+    res = session.get(
         url,
-        headers={"X-Api-Key": secrets.api_key.get_secret_value()},
+        headers={"X-Api-Key": secrets.api_key.get_secret_value()} if use_api_key else None,
         timeout=state.config.buildarr.request_timeout,
     )
     res_json = res.json()
@@ -76,6 +80,8 @@ def api_post(
     secrets: JellyseerrSecrets,
     api_url: str,
     req: Any = None,
+    session: Optional[requests.Session] = None,
+    use_api_key: bool = True,
     expected_status_code: HTTPStatus = HTTPStatus.CREATED,
 ) -> Any:
     """
@@ -93,9 +99,11 @@ def api_post(
 
     url = f"{secrets.host_url}/{api_url.lstrip('/')}"
     logger.debug("POST %s <- req=%s", url, repr(req))
-    headers = {"X-Api-Key": secrets.api_key.get_secret_value()}
+    headers = {"X-Api-Key": secrets.api_key.get_secret_value()} if use_api_key else None
     if not state.dry_run:
-        res = requests.post(
+        if not session:
+            session = requests.Session()
+        res = session.post(
             url,
             headers=headers,
             timeout=state.config.buildarr.request_timeout,
@@ -114,6 +122,8 @@ def api_put(
     secrets: JellyseerrSecrets,
     api_url: str,
     req: Any,
+    session: Optional[requests.Session] = None,
+    use_api_key: bool = True,
     expected_status_code: HTTPStatus = HTTPStatus.OK,
 ) -> Any:
     """
@@ -131,9 +141,11 @@ def api_put(
 
     url = f"{secrets.host_url}/{api_url.lstrip('/')}"
     logger.debug("PUT %s <- req=%s", url, repr(req))
-    headers = {"X-Api-Key": secrets.api_key.get_secret_value()}
+    headers = {"X-Api-Key": secrets.api_key.get_secret_value()} if use_api_key else None
     if not state.dry_run:
-        res = requests.put(
+        if not session:
+            session = requests.Session()
+        res = session.put(
             url,
             headers=headers,
             json=req,
@@ -151,6 +163,8 @@ def api_put(
 def api_delete(
     secrets: JellyseerrSecrets,
     api_url: str,
+    session: Optional[requests.Session] = None,
+    use_api_key: bool = True,
     expected_status_code: HTTPStatus = HTTPStatus.OK,
 ) -> None:
     """
@@ -164,16 +178,17 @@ def api_delete(
 
     url = f"{secrets.host_url}/{api_url.lstrip('/')}"
     logger.debug("DELETE %s", url)
-    headers = {"X-Api-Key": secrets.api_key.get_secret_value()}
-    res = (
-        requests.delete(
+    headers = {"X-Api-Key": secrets.api_key.get_secret_value()} if use_api_key else None
+    if not state.dry_run:
+        if not session:
+            session = requests.Session()
+        res = session.delete(
             url,
             headers=headers,
             timeout=state.config.buildarr.request_timeout,
         )
-        if not state.dry_run
-        else _create_dryrun_response("DELETE", url)
-    )
+    else:
+        res = _create_dryrun_response("DELETE", url)
     logger.debug("DELETE %s -> status_code=%i", url, res.status_code)
     if res.status_code != expected_status_code:
         api_error(method="DELETE", url=url, response=res, parse_response=False)
@@ -226,6 +241,10 @@ def _api_error(res_json: Any) -> str:
 
     try:
         return res_json["message"]
+    except KeyError:
+        pass
+    try:
+        return res_json["error"]
     except KeyError:
         return f"(Unsupported error JSON format) {res_json}"
 
