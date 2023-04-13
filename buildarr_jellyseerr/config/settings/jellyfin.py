@@ -104,10 +104,12 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
                 ):
                     raise RuntimeError(
                         "Jellyseerr already has been configured with a Jellyfin instance "
-                        "but session data has been lost, please recreate Jellyseerr and try again",
+                        "but session data has been lost, please recreate Jellyseerr and "
+                        "re-initialise it",
                     ) from None
                 else:
                     raise
+            logger.info("Finished authenticating Jellyseerr with Jellyfin")
             # Ensure the Jellyfin libraries are synced, and fetch the library metadata.
             logger.info("Syncing Jellyfin libraries to Jellyseerr")
             api_libraries = api_get(
@@ -137,7 +139,6 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
                 host_url,
                 f"/api/v1/settings/jellyfin/library?enable={','.join(enabled_library_ids)}",
                 session=session,
-                use_api_key=False,
             )
             logger.info("Finished enabling Jellyfin libraries in Jellyseerr")
             # Finalise the initialisation of the Jellyseerr instance.
@@ -146,7 +147,6 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
                 host_url,
                 "/api/v1/settings/initialize",
                 session=session,
-                use_api_key=False,
                 expected_status_code=HTTPStatus.OK,
             )
             logger.info("Finished finalising initialisation")

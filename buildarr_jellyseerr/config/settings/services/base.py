@@ -75,3 +75,8 @@ class ArrBase(JellyseerrConfigBase):
             {"decoder": operator.not_, "encoder": operator.not_},
         ),
     ]
+
+    class Config(JellyseerrConfigBase.Config):
+        # Ensure in-place assignments of attributes are always validated,
+        # since this class performs such modifications in certain cases.
+        validate_assignment = True
