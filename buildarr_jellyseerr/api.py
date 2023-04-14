@@ -66,7 +66,9 @@ def api_get(
         host_url = secrets.host_url
         api_key = secrets.api_key.get_secret_value() if use_api_key else None
     url = f"{host_url}/{api_url.lstrip('/')}"
+
     logger.debug("GET %s", url)
+
     if not session:
         session = requests.Session()
     res = session.get(
@@ -75,9 +77,12 @@ def api_get(
         timeout=state.config.buildarr.request_timeout,
     )
     res_json = res.json()
+
     logger.debug("GET %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
+
     if res.status_code != expected_status_code:
         api_error(method="GET", url=url, response=res)
+
     return res_json
 
 
@@ -109,7 +114,9 @@ def api_post(
         host_url = secrets.host_url
         api_key = secrets.api_key.get_secret_value() if use_api_key else None
     url = f"{host_url}/{api_url.lstrip('/')}"
+
     logger.debug("POST %s <- req=%s", url, repr(req))
+
     if not session:
         session = requests.Session()
     res = session.post(
@@ -119,9 +126,12 @@ def api_post(
         **({"json": req} if req is not None else {}),
     )
     res_json = res.json()
+
     logger.debug("POST %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
+
     if res.status_code != expected_status_code:
         api_error(method="POST", url=url, response=res)
+
     return res_json
 
 
@@ -153,7 +163,9 @@ def api_put(
         host_url = secrets.host_url
         api_key = secrets.api_key.get_secret_value() if use_api_key else None
     url = f"{host_url}/{api_url.lstrip('/')}"
+
     logger.debug("PUT %s <- req=%s", url, repr(req))
+
     if not session:
         session = requests.Session()
     res = session.put(
@@ -163,9 +175,12 @@ def api_put(
         timeout=state.config.buildarr.request_timeout,
     )
     res_json = res.json()
+
     logger.debug("PUT %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
+
     if res.status_code != expected_status_code:
         api_error(method="PUT", url=url, response=res)
+
     return res_json
 
 
@@ -192,7 +207,9 @@ def api_delete(
         host_url = secrets.host_url
         api_key = secrets.api_key.get_secret_value() if use_api_key else None
     url = f"{host_url}/{api_url.lstrip('/')}"
+
     logger.debug("DELETE %s", url)
+
     if not session:
         session = requests.Session()
     res = session.delete(
@@ -200,7 +217,9 @@ def api_delete(
         headers={"X-Api-Key": api_key} if api_key else None,
         timeout=state.config.buildarr.request_timeout,
     )
+
     logger.debug("DELETE %s -> status_code=%i", url, res.status_code)
+
     if res.status_code != expected_status_code:
         api_error(method="DELETE", url=url, response=res, parse_response=False)
 
