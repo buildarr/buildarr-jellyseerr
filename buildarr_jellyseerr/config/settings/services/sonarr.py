@@ -189,7 +189,7 @@ class Sonarr(ArrBase):
             expected_status_code=HTTPStatus.OK,
         )
 
-    def _render(
+    def _resolve(
         self,
         api_key: str,
         root_folders: Set[str],
@@ -198,60 +198,62 @@ class Sonarr(ArrBase):
         tag_ids: Mapping[str, int],
         required: bool = True,
     ) -> Self:
-        rendered = self.copy(deep=True)
-        rendered.api_key = api_key  # type: ignore[assignment]
-        if required and rendered.root_folder not in root_folders:
+        resolved = self.copy(deep=True)
+        resolved.api_key = api_key  # type: ignore[assignment]
+        if required and resolved.root_folder not in root_folders:
             raise ValueError(
-                f"Invalid root folder '{rendered.root_folder}' "
+                f"Invalid root folder '{resolved.root_folder}' "
                 f"(expected one of: {', '.join(repr(rf) for rf in root_folders)})",
             )
-        rendered.quality_profile = self._render_get_resource(  # type: ignore[assignment]
+        resolved.quality_profile = self._resolve_get_resource(  # type: ignore[assignment]
             resource_description="quality profile",
             resource_ids=quality_profile_ids,
-            resource_ref=rendered.quality_profile,
+            resource_ref=resolved.quality_profile,
             required=required,
         )
-        rendered.language_profile = self._render_get_resource(  # type: ignore[assignment]
+        resolved.language_profile = self._resolve_get_resource(  # type: ignore[assignment]
             resource_description="language profile",
             resource_ids=language_profile_ids,
-            resource_ref=rendered.language_profile,
+            resource_ref=resolved.language_profile,
             required=required,
         )
-        rendered.tags = set(
-            self._render_get_resource(  # type: ignore[misc]
+        resolved.tags = set(
+            self._resolve_get_resource(  # type: ignore[misc]
                 resource_description="tag",
                 resource_ids=tag_ids,
                 resource_ref=tag,
                 required=required,
             )
-            for tag in rendered.tags
+            for tag in resolved.tags
         )
-        if rendered.anime_quality_profile:
-            rendered.anime_quality_profile = self._render_get_resource(  # type: ignore[assignment]
+        if resolved.anime_quality_profile:
+            resolved.anime_quality_profile = self._resolve_get_resource(  # type: ignore[assignment]
                 resource_description="quality profile",
                 resource_ids=quality_profile_ids,
-                resource_ref=rendered.anime_quality_profile,
+                resource_ref=resolved.anime_quality_profile,
                 required=required,
             )
-        if rendered.anime_language_profile:
-            rendered.anime_language_profile = self._render_get_resource(  # type: ignore[assignment]
-                resource_description="language profile",
-                resource_ids=language_profile_ids,
-                resource_ref=rendered.anime_language_profile,
-                required=required,
+        if resolved.anime_language_profile:
+            resolved.anime_language_profile = (
+                self._resolve_get_resource(  # type: ignore[assignment]
+                    resource_description="language profile",
+                    resource_ids=language_profile_ids,
+                    resource_ref=resolved.anime_language_profile,
+                    required=required,
+                )
             )
-        rendered.anime_tags = set(
-            self._render_get_resource(  # type: ignore[misc]
+        resolved.anime_tags = set(
+            self._resolve_get_resource(  # type: ignore[misc]
                 resource_description="tag",
                 resource_ids=tag_ids,
                 resource_ref=tag,
                 required=required,
             )
-            for tag in rendered.anime_tags
+            for tag in resolved.anime_tags
         )
-        return rendered
+        return resolved
 
-    def _render_get_resource(
+    def _resolve_get_resource(
         self,
         resource_description: str,
         resource_ids: Mapping[str, int],
@@ -417,7 +419,7 @@ class SonarrSettings(JellyseerrConfigBase):
             tag_ids: Dict[str, int] = {
                 api_profile["label"]: api_profile["id"] for api_profile in api_metadata["tags"]
             }
-            rendered_service = service._render(
+            resolved_service = service._resolve(
                 api_key=api_key,
                 root_folders=root_folders,
                 quality_profile_ids=quality_profile_ids,
@@ -425,7 +427,7 @@ class SonarrSettings(JellyseerrConfigBase):
                 tag_ids=tag_ids,
             )
             if service_name not in remote.definitions:
-                rendered_service._create_remote(
+                resolved_service._create_remote(
                     tree=profile_tree,
                     secrets=secrets,
                     quality_profile_ids=quality_profile_ids,
@@ -434,10 +436,10 @@ class SonarrSettings(JellyseerrConfigBase):
                     service_name=service_name,
                 )
                 changed = True
-            elif rendered_service._update_remote(
+            elif resolved_service._update_remote(
                 tree=profile_tree,
                 secrets=secrets,
-                remote=remote.definitions[service_name]._render(  # type: ignore[arg-type]
+                remote=remote.definitions[service_name]._resolve(  # type: ignore[arg-type]
                     api_key=api_key,
                     root_folders=root_folders,
                     quality_profile_ids=quality_profile_ids,

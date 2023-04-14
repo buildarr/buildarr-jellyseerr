@@ -25,12 +25,12 @@ import operator
 from typing import List, Set
 
 from buildarr.config import RemoteMapEntry
-from buildarr.types import BaseIntEnum
+from buildarr.types import BaseEnum
 
 from .base import NotificationsSettingsBase
 
 
-class NotificationType(BaseIntEnum):
+class NotificationType(BaseEnum):
     # none = 0
     media_pending = 2
     media_approved = 4
@@ -65,12 +65,16 @@ class NotificationTypesSettingsBase(NotificationsSettingsBase):
                         set(
                             notification_type
                             for notification_type in NotificationType
-                            if notification_type & v
+                            if v & notification_type.value
                         )
                         if v
                         else set()
                     ),
-                    "encoder": lambda v: functools.reduce(operator.ior, v, 0),
+                    "encoder": lambda v: functools.reduce(
+                        operator.ior,
+                        (notification_type.value for notification_type in v),
+                        0,
+                    ),
                 },
             ),
         ]

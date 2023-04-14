@@ -26,7 +26,7 @@ from http import HTTPStatus
 from typing import Dict, Iterable, List, Set
 
 from buildarr.config import RemoteMapEntry
-from buildarr.types import BaseIntEnum
+from buildarr.types import BaseEnum
 from pydantic import Field, validator
 from typing_extensions import Self
 
@@ -35,8 +35,8 @@ from ...secrets import JellyseerrSecrets
 from ..types import JellyseerrConfigBase
 
 
-class Permission(BaseIntEnum):
-    none = 0
+class Permission(BaseEnum):
+    # none = 0
     admin = 2
     manage_settings = 4
     manage_users = 8
@@ -65,6 +65,9 @@ class Permission(BaseIntEnum):
     recent_view = 67108864
     watchlist_view = 134217728
 
+    def is_permitted(self, permissions_encoded: int) -> bool:
+        return bool(permissions_encoded & self.value)
+
     @classmethod
     def set_reduce(cls, permissions: Iterable[Permission]) -> Set[Permission]:
         return cls.set_decoder(cls.set_encoder(permissions))
@@ -73,23 +76,23 @@ class Permission(BaseIntEnum):
     def set_decoder(cls, permissions_encoded: int) -> Set[Permission]:
         #
         if not permissions_encoded:
-            return {cls.none}
-        if permissions_encoded & cls.admin:
+            return set()
+        if cls.admin.is_permitted(permissions_encoded):
             return {cls.admin}
         #
         permissions: Set[Permission] = set()
         #
-        if permissions_encoded & cls.manage_users:
+        if cls.manage_users.is_permitted(permissions_encoded):
             permissions.add(cls.manage_users)
         #
-        if permissions_encoded & cls.manage_issues:
+        if cls.manage_issues.is_permitted(permissions_encoded):
             permissions.add(cls.manage_issues)
         else:
             for permission in (cls.create_issues, cls.view_issues):
-                if permissions_encoded & permission:
+                if permission.is_permitted(permissions_encoded):
                     permissions.add(permission)
         #
-        if permissions_encoded & cls.manage_requests:
+        if cls.manage_requests.is_permitted(permissions_encoded):
             permissions.add(cls.manage_requests)
         else:
             for permission in (
@@ -98,61 +101,61 @@ class Permission(BaseIntEnum):
                 cls.recent_view,
                 cls.watchlist_view,
             ):
-                if permissions_encoded & permission:
+                if permission.is_permitted(permissions_encoded):
                     permissions.add(permission)
         #
-        if permissions_encoded & cls.request:
+        if cls.request.is_permitted(permissions_encoded):
             permissions.add(cls.request)
         else:
             for permission in (cls.request_movie, cls.request_tv):
-                if permissions_encoded & permission:
+                if permission.is_permitted(permissions_encoded):
                     permissions.add(permission)
         #
-        if permissions_encoded & cls.request_4k:
+        if cls.request_4k:
             permissions.add(cls.request_4k)
         else:
             for permission in (cls.request_4k_movie, cls.request_4k_tv):
-                if permissions_encoded & permission:
+                if permission.is_permitted(permissions_encoded):
                     permissions.add(permission)
         #
-        if permissions_encoded & cls.auto_request:
+        if cls.auto_request.is_permitted(permissions_encoded):
             if cls.request not in permissions:
                 cls._permission_error(cls.auto_request, cls.request)
             permissions.add(cls.auto_request)
         else:
-            if permissions_encoded & cls.auto_request_movie:
+            if cls.auto_request_movie.is_permitted(permissions_encoded):
                 if cls.request not in permissions or cls.request_movie not in permissions:
                     cls._permission_error(cls.auto_request_movie, cls.request_movie)
                 permissions.add(cls.auto_request_movie)
-            if permissions_encoded & cls.auto_request_tv:
+            if cls.auto_request_tv.is_permitted(permissions_encoded):
                 if cls.request not in permissions or cls.request_tv not in permissions:
                     cls._permission_error(cls.auto_request_tv, cls.request_tv)
                 permissions.add(cls.auto_request_tv)
         #
-        if permissions_encoded & cls.auto_approve:
+        if cls.auto_approve.is_permitted(permissions_encoded):
             if cls.request not in permissions:
                 cls._permission_error(cls.auto_approve, cls.request)
             permissions.add(cls.auto_approve)
         else:
-            if permissions_encoded & cls.auto_approve_movie:
+            if cls.auto_approve_movie.is_permitted(permissions_encoded):
                 if cls.request not in permissions or cls.request_movie not in permissions:
                     cls._permission_error(cls.auto_approve_movie, cls.request_movie)
                 permissions.add(cls.auto_approve_movie)
-            if permissions_encoded & cls.auto_approve_tv:
+            if cls.auto_approve_tv.is_permitted(permissions_encoded):
                 if cls.request not in permissions or cls.request_tv not in permissions:
                     cls._permission_error(cls.auto_approve_tv, cls.request_tv)
                 permissions.add(cls.auto_approve_tv)
         #
-        if permissions_encoded & cls.auto_approve_4k:
+        if cls.auto_approve_4k.is_permitted(permissions_encoded):
             if cls.request_4k not in permissions:
                 cls._permission_error(cls.auto_approve_4k, cls.request_4k)
             permissions.add(cls.auto_approve_4k)
         else:
-            if permissions_encoded & cls.auto_approve_4k_movie:
+            if cls.auto_approve_4k_movie.is_permitted(permissions_encoded):
                 if cls.request_4k not in permissions or cls.request_4k_movie not in permissions:
                     cls._permission_error(cls.auto_approve_4k_movie, cls.request_4k_movie)
                 permissions.add(cls.auto_approve_4k_movie)
-            if permissions_encoded & cls.auto_approve_4k_tv:
+            if cls.auto_approve_4k_tv.is_permitted(permissions_encoded):
                 if cls.request_4k not in permissions or cls.request_4k_tv not in permissions:
                     cls._permission_error(cls.auto_approve_4k_tv, cls.request_4k_tv)
                 permissions.add(cls.auto_approve_4k_tv)
@@ -168,7 +171,11 @@ class Permission(BaseIntEnum):
 
     @classmethod
     def set_encoder(cls, permissions: Iterable[Permission]) -> int:
-        return functools.reduce(operator.ior, permissions, 0)
+        return functools.reduce(
+            operator.ior,
+            (permission.value for permission in permissions),
+            0,
+        )
 
 
 class JellyseerrUsersSettings(JellyseerrConfigBase):
