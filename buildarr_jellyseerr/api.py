@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import json
 
-from datetime import datetime, timezone
 from http import HTTPStatus
 from logging import getLogger
 from typing import TYPE_CHECKING, Union
@@ -33,7 +32,7 @@ from buildarr.state import state
 from .exceptions import JellyseerrAPIError
 
 if TYPE_CHECKING:
-    from typing import Any, Mapping, Optional
+    from typing import Any, Optional
 
     from .secrets import JellyseerrSecrets
 
@@ -111,18 +110,14 @@ def api_post(
         api_key = secrets.api_key.get_secret_value() if use_api_key else None
     url = f"{host_url}/{api_url.lstrip('/')}"
     logger.debug("POST %s <- req=%s", url, repr(req))
-    headers = {"X-Api-Key": api_key} if api_key else None
-    if not state.dry_run:
-        if not session:
-            session = requests.Session()
-        res = session.post(
-            url,
-            headers=headers,
-            timeout=state.config.buildarr.request_timeout,
-            **({"json": req} if req is not None else {}),
-        )
-    else:
-        res = _create_dryrun_response("POST", url, content=json.dumps(req))
+    if not session:
+        session = requests.Session()
+    res = session.post(
+        url,
+        headers={"X-Api-Key": api_key} if api_key else None,
+        timeout=state.config.buildarr.request_timeout,
+        **({"json": req} if req is not None else {}),
+    )
     res_json = res.json()
     logger.debug("POST %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
     if res.status_code != expected_status_code:
@@ -159,18 +154,14 @@ def api_put(
         api_key = secrets.api_key.get_secret_value() if use_api_key else None
     url = f"{host_url}/{api_url.lstrip('/')}"
     logger.debug("PUT %s <- req=%s", url, repr(req))
-    headers = {"X-Api-Key": api_key} if api_key else None
-    if not state.dry_run:
-        if not session:
-            session = requests.Session()
-        res = session.put(
-            url,
-            headers=headers,
-            json=req,
-            timeout=state.config.buildarr.request_timeout,
-        )
-    else:
-        res = _create_dryrun_response("PUT", url, content=json.dumps(req))
+    if not session:
+        session = requests.Session()
+    res = session.put(
+        url,
+        headers={"X-Api-Key": api_key} if api_key else None,
+        json=req,
+        timeout=state.config.buildarr.request_timeout,
+    )
     res_json = res.json()
     logger.debug("PUT %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
     if res.status_code != expected_status_code:
@@ -202,17 +193,13 @@ def api_delete(
         api_key = secrets.api_key.get_secret_value() if use_api_key else None
     url = f"{host_url}/{api_url.lstrip('/')}"
     logger.debug("DELETE %s", url)
-    headers = {"X-Api-Key": api_key} if api_key else None
-    if not state.dry_run:
-        if not session:
-            session = requests.Session()
-        res = session.delete(
-            url,
-            headers=headers,
-            timeout=state.config.buildarr.request_timeout,
-        )
-    else:
-        res = _create_dryrun_response("DELETE", url)
+    if not session:
+        session = requests.Session()
+    res = session.delete(
+        url,
+        headers={"X-Api-Key": api_key} if api_key else None,
+        timeout=state.config.buildarr.request_timeout,
+    )
     logger.debug("DELETE %s -> status_code=%i", url, res.status_code)
     if res.status_code != expected_status_code:
         api_error(method="DELETE", url=url, response=res, parse_response=False)
@@ -238,97 +225,21 @@ def api_error(
     """
 
     error_message = (
-        f"Unexpected response with status code {response.status_code} from from '{method} {url}':"
+        f"Unexpected response with status code {response.status_code} from from '{method} {url}'"
     )
+
     if parse_response:
-        res_json = response.json()
+        error_message += ": "
         try:
-            error_message += f" {_api_error(res_json)}"
-        except TypeError:
-            for error in res_json:
-                error_message += f"\n{_api_error(error)}"
-        except KeyError:
-            error_message += f" {res_json}"
+            res_json = response.json()
+            try:
+                error_message += res_json["message"]
+            except KeyError:
+                try:
+                    error_message += res_json["error"]
+                except KeyError:
+                    error_message += f"(Unsupported error JSON format) {res_json}"
+        except json.JSONDecodeError:
+            f"(Non-JSON error response)\n{response.text}"
+
     raise JellyseerrAPIError(error_message, status_code=response.status_code)
-
-
-def _api_error(res_json: Any) -> str:
-    """
-    Generate an error message from a response object.
-
-    Args:
-        res_json (Any): Response object
-
-    Returns:
-        String containing one or more error messages
-    """
-
-    try:
-        return res_json["message"]
-    except KeyError:
-        pass
-    try:
-        return res_json["error"]
-    except KeyError:
-        return f"(Unsupported error JSON format) {res_json}"
-
-
-def _create_dryrun_response(
-    method: str,
-    url: str,
-    headers: Optional[Mapping[str, str]] = None,
-    status_code: Optional[int] = None,
-    content_type: str = "application/json",
-    charset: str = "utf-8",
-    content: str = "{}",
-) -> requests.Response:
-    """
-    A utility function for generating `requests.Response` objects in dry-run mode.
-
-    Args:
-        method (str): HTTP method of the response to simulate.
-        url (str): URL of the request.
-        status_code (Optional[int], optional): Status code for the response. Default: auto-detect
-        content_type (str, optional): MIME type of response content. Default: `application/json`
-        charset (str, optional): Encoding of response content. Default: `utf-8`
-        content (str, optional): Response content. Default: `{}`
-
-    Raises:
-        ValueError: When an unsupported HTTP method is used
-
-    Returns:
-        Generated `requests.Response` object
-    """
-
-    method = method.upper()
-
-    response = requests.Response()
-    response.url = url
-    response.headers["Vary"] = "Accept"
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Content-Type"] = f"{content_type}; charset={charset}"
-    response.headers["Server"] = "Mono-HTTPAPI/1.0"
-    response.headers["Date"] = datetime.now(tz=timezone.utc).strftime("%a, %d %b %Y %H:%M:%S %Z")
-    response.headers["Transfer-Encoding"] = "chunked"
-    if headers:
-        response.headers.update(headers)
-    if status_code is not None:
-        response.status_code = status_code
-    elif method == "POST":
-        response.status_code = int(HTTPStatus.CREATED)
-    elif method == "PUT":
-        response.status_code = int(HTTPStatus.ACCEPTED)
-    elif method == "DELETE":
-        response.status_code = int(HTTPStatus.OK)
-    else:
-        raise ValueError(
-            f"Unsupported HTTP method for creating dry-run response: {str(method)}",
-        )
-    response.encoding = charset
-    if content is not None:
-        response._content = content.encode("UTF-8")
-
-    return response
