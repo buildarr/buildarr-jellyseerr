@@ -1,60 +1,16 @@
 # Notifications
 
-Prowlarr supports pushing notifications to external applications and services.
+Jellyseerr supports pushing notifications to external applications and services.
 
-These are not only for Prowlarr to communicate with the outside world, they can also be useful
+These are not only for Jellyseerr to communicate with the outside world, they can also be useful
 for monitoring since the user can be alerted, by a service of their choice, when
 some kind of event (or problem) occurs.
 
 ## Configuration
 
-##### ::: buildarr_prowlarr.config.settings.notifications.NotificationTriggers
-    options:
-      members:
-        - on_health_issue
-        - include_health_warnings
-        - on_application_update
-      show_root_heading: false
-      show_source: false
-
-## Apprise
-
-##### ::: buildarr_prowlarr.config.settings.notifications.AppriseNotification
-    options:
-      members:
-        - type
-        - base_url
-        - configuration_key
-        - stateless_urls
-        - apprise_tags
-        - auth_username
-        - auth_password
-      show_root_heading: false
-      show_source: false
-
-## Boxcar
-
-##### ::: buildarr_prowlarr.config.settings.notifications.BoxcarNotification
-    options:
-      members:
-        - type
-        - access_token
-      show_root_heading: false
-      show_source: false
-
-## Custom Script
-
-##### ::: buildarr_prowlarr.config.settings.notifications.CustomscriptNotification
-    options:
-      members:
-        - type
-        - path
-      show_root_heading: false
-      show_source: false
-
 ## Discord
 
-##### ::: buildarr_prowlarr.config.settings.notifications.DiscordNotification
+##### ::: buildarr_jellyseerr.config.settings.notifications.discord.DiscordSettings
     options:
       members:
         - type
@@ -69,7 +25,7 @@ some kind of event (or problem) occurs.
 
 ## Email
 
-##### ::: buildarr_prowlarr.config.settings.notifications.EmailNotification
+##### ::: buildarr_jellyseerr.config.settings.notifications.email.EmailSettings
     options:
       members:
         - type
@@ -87,7 +43,7 @@ some kind of event (or problem) occurs.
 
 ## Gotify
 
-##### ::: buildarr_prowlarr.config.settings.notifications.GotifyNotification
+##### ::: buildarr_jellyseerr.config.settings.notifications.gotify.GotifySettings
     options:
       members:
         - type
@@ -97,9 +53,9 @@ some kind of event (or problem) occurs.
       show_root_heading: false
       show_source: false
 
-## Join
+## LunaSea
 
-##### ::: buildarr_prowlarr.config.settings.notifications.JoinNotification
+##### ::: buildarr_jellyseerr.config.settings.notifications.lunasea.LunaseaSettings
     options:
       members:
         - type
@@ -109,60 +65,9 @@ some kind of event (or problem) occurs.
       show_root_heading: false
       show_source: false
 
-## Mailgun
-
-##### ::: buildarr_prowlarr.config.settings.notifications.MailgunNotification
-    options:
-      members:
-        - type
-        - api_key
-        - use_eu_endpoint
-        - from_address
-        - sender_domain
-        - recipient_addresses
-      show_root_heading: false
-      show_source: false
-
-## Notifiarr
-
-##### ::: buildarr_prowlarr.config.settings.notifications.NotifiarrNotification
-    options:
-      members:
-        - type
-        - api_key
-      show_root_heading: false
-      show_source: false
-
-## ntfy
-
-##### ::: buildarr_prowlarr.config.settings.notifications.NtfyNotification
-    options:
-      members:
-        - type
-        - server_url
-        - username
-        - password
-        - priority
-        - topics
-        - ntfy_tags
-        - click_url
-      show_root_heading: false
-      show_source: false
-
-## Prowl
-
-##### ::: buildarr_prowlarr.config.settings.notifications.ProwlNotification
-    options:
-      members:
-        - type
-        - api_key
-        - priority
-      show_root_heading: false
-      show_source: false
-
 ## Pushbullet
 
-##### ::: buildarr_prowlarr.config.settings.notifications.PushbulletNotification
+##### ::: buildarr_jellyseerr.config.settings.notifications.pushbullet.PushbulletSettings
     options:
       members:
         - type
@@ -175,7 +80,7 @@ some kind of event (or problem) occurs.
 
 ## Pushover
 
-##### ::: buildarr_prowlarr.config.settings.notifications.PushoverNotification
+##### ::: buildarr_jellyseerr.config.settings.notifications.pushover.PushoverSettings
     options:
       members:
         - type
@@ -189,21 +94,9 @@ some kind of event (or problem) occurs.
       show_root_heading: false
       show_source: false
 
-## SendGrid
-
-##### ::: buildarr_prowlarr.config.settings.notifications.SendgridNotification
-    options:
-      members:
-        - type
-        - api_key
-        - from_address
-        - recipient_addresses
-      show_root_heading: false
-      show_source: false
-
 ## Slack
 
-##### ::: buildarr_prowlarr.config.settings.notifications.SlackNotification
+##### ::: buildarr_jellyseerr.config.settings.notifications.slack.SlackSettings
     options:
       members:
         - type
@@ -216,7 +109,7 @@ some kind of event (or problem) occurs.
 
 ## Telegram
 
-##### ::: buildarr_prowlarr.config.settings.notifications.TelegramNotification
+##### ::: buildarr_jellyseerr.config.settings.notifications.telegram.TelegramSettings
     options:
       members:
         - type
@@ -226,24 +119,9 @@ some kind of event (or problem) occurs.
       show_root_heading: false
       show_source: false
 
-## Twitter
-
-##### ::: buildarr_prowlarr.config.settings.notifications.TwitterNotification
-    options:
-      members:
-        - type
-        - consumer_key
-        - consumer_secret
-        - access_token
-        - access_token_secret
-        - mention
-        - direct_message
-      show_root_heading: false
-      show_source: false
-
 ## Webhook
 
-##### ::: buildarr_prowlarr.config.settings.notifications.WebhookNotification
+##### ::: buildarr_jellyseerr.config.settings.notifications.webhook.WebhookSettings
     options:
       members:
         - type
@@ -251,5 +129,15 @@ some kind of event (or problem) occurs.
         - method
         - username
         - password
+      show_root_heading: false
+      show_source: false
+
+
+## Webpush (Browser Push Notifiations)
+
+##### ::: buildarr_jellyseerr.config.settings.notifications.webpush.WebpushSettings
+    options:
+      members:
+        - enable
       show_root_heading: false
       show_source: false

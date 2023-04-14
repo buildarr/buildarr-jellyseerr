@@ -27,7 +27,7 @@ import requests
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr
-from pydantic import AnyHttpUrl, EmailStr, Field, SecretStr
+from pydantic import AnyHttpUrl, EmailStr, SecretStr
 from typing_extensions import Self
 
 from ...api import api_get, api_post
@@ -39,21 +39,38 @@ logger = getLogger(__name__)
 
 
 class JellyseerrJellyfinSettings(JellyseerrConfigBase):
-    """
-    Jellyseerr Jellyfin settings.
-    """
 
-    server_url: Optional[str] = Field(None, alias="hostname")
+    server_url: Optional[str] = None
+    """
+    Server URL that Jellyseerr will use to communicate with Jellyfin.
+    """
 
     username: Optional[str] = None
+    """
+    Username of the Jellyfin administrator user that Jellyseerr will use.
+    """
 
     password: Optional[SecretStr] = None
+    """
+    Jellyfin administrator user password.
+    """
 
-    email_address: Optional[EmailStr] = Field(None, alias="email")
+    email_address: Optional[EmailStr] = None
+    """
+    Email address associated with the Jellyfin administrator user.
+    """
 
-    external_url: Optional[AnyHttpUrl] = Field(None, alias="external_hostname")
+    external_url: Optional[AnyHttpUrl] = None
+    """
+    The externally-accessible URL for the Jellyfin server.
+
+    This is used to create usable URLs to Jellyfin libraries in the Jellyseerr UI.
+    """
 
     libraries: Set[NonEmptyStr] = set()
+    """
+    The Jellyfin libraries that Jellyseerr will use to scan for available titles.
+    """
 
     def _is_initialized(self, host_url: str) -> bool:
         return api_get(host_url, "/api/v1/settings/public")["initialized"]
@@ -197,7 +214,10 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
         changed, remote_attrs = self.get_update_remote_attrs(
             tree,
             remote,
-            self._get_remote_map(api_get(secrets, "/api/v1/settings/jellyfin/library")),
+            # /api/v1/settings/jellyfin/libraries is not used here because
+            # despite it being a GET endpoint, it is actually meant to be used
+            # only to enable or disable libraries.
+            self._get_remote_map(api_get(secrets, "/api/v1/settings/jellyfin")["libraries"]),
             check_unmanaged=check_unmanaged,
         )
         if "libraries" in remote_attrs:

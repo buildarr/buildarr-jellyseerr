@@ -1,6 +1,6 @@
 # Host Configuration
 
-##### ::: buildarr_prowlarr.config.ProwlarrInstanceConfig
+##### ::: buildarr_jellyseerr.config.JellyseerrInstanceConfig
     options:
       members:
         - hostname

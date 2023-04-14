@@ -22,7 +22,7 @@ from __future__ import annotations
 from typing import List, Optional, Set
 
 from buildarr.config import RemoteMapEntry
-from pydantic import AnyHttpUrl, Field
+from pydantic import AnyHttpUrl
 
 from .notification_types import NotificationTypesSettingsBase
 
@@ -37,14 +37,14 @@ class DiscordSettings(NotificationTypesSettingsBase):
     Discord server webhook URL.
     """
 
-    username: Optional[str] = Field(None, alias="bot_username")
+    username: Optional[str] = None
     """
     The username to post as.
 
     If unset, blank or set to `None`, use the default username set to the webhook URL.
     """
 
-    avatar_url: Optional[AnyHttpUrl] = Field(None, alias="bot_avatar_url")
+    avatar_url: Optional[AnyHttpUrl] = None
     """
     A URL to an custom avatar to use when posting.
 

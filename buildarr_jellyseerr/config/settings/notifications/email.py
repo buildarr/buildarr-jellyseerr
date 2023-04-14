@@ -23,7 +23,7 @@ from typing import Dict, List, Optional, Set
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, Port
-from pydantic import EmailStr, Field, SecretStr
+from pydantic import EmailStr, SecretStr
 
 from .base import NotificationsSettingsBase
 
@@ -66,7 +66,7 @@ class EmailSettings(NotificationsSettingsBase):
     Jellyseerr email notifications settings.
     """
 
-    require_user_email: bool = Field(False, alias="user_email_required")
+    require_user_email: bool = False
 
     sender_name: Optional[str] = "Jellyseerr"
 
@@ -78,15 +78,15 @@ class EmailSettings(NotificationsSettingsBase):
 
     encryption_method: EncryptionMethod = EncryptionMethod.starttls_prefer
 
-    allow_selfsigned_certificates: bool = Field(False, alias="self_signed_certificates")
+    allow_selfsigned_certificates: bool = False
 
-    smtp_username: Optional[str] = Field(None, alias="smtp_user")
+    smtp_username: Optional[str] = None
 
-    smtp_password: Optional[SecretStr] = Field(None, alias="smtp_pass")
+    smtp_password: Optional[SecretStr] = None
 
-    pgp_private_key: Optional[SecretStr] = Field(None, alias="pgp_key")
+    pgp_private_key: Optional[SecretStr] = None
 
-    pgp_password: Optional[SecretStr] = Field(None, alias="pgp_pass")
+    pgp_password: Optional[SecretStr] = None
 
     _type: str = "email"
     _required_if_enabled: Set[str] = {"sender_name", "sender_address", "smtp_host"}

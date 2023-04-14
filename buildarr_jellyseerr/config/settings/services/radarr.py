@@ -390,3 +390,25 @@ class RadarrSettings(JellyseerrConfigBase):
                     logger.debug("%s: (...) (unmanaged)", profile_tree)
         # Return whether or not the remote instance was changed.
         return changed
+
+    def _resolve_(self, secrets: JellyseerrSecrets) -> None:
+        resolved_definitions: Dict[str, Radarr] = {}
+        for service_name, service in self.definitions.items():
+            api_key = service._get_api_key()
+            api_metadata = service._get_api_metadata(secrets, api_key)
+            root_folders: Set[str] = set(
+                api_rootfolder["path"] for api_rootfolder in api_metadata["rootFolders"]
+            )
+            quality_profile_ids: Dict[str, int] = {
+                api_profile["name"]: api_profile["id"] for api_profile in api_metadata["profiles"]
+            }
+            tag_ids: Dict[str, int] = {
+                api_profile["label"]: api_profile["id"] for api_profile in api_metadata["tags"]
+            }
+            resolved_definitions[service_name] = service._resolve(
+                api_key=api_key,
+                root_folders=root_folders,
+                quality_profile_ids=quality_profile_ids,
+                tag_ids=tag_ids,
+            )
+        self.definitions = resolved_definitions

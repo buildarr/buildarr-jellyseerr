@@ -1,6 +1,6 @@
-# UI
+# Users
 
-##### ::: buildarr_prowlarr.config.settings.ui.ProwlarrUISettings
+##### ::: buildarr_jellyseerr.config.settings.users.JellyseerrUsersSettings
     options:
       members:
         - first_day_of_week

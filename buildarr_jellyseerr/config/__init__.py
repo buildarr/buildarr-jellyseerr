@@ -119,7 +119,8 @@ class JellyseerrInstanceConfig(_JellyseerrInstanceConfig):
     """
     API key to use to authenticate with the Jellyseerr instance.
 
-    **This attribute is required**.
+    **This attribute is required.
+    Buildarr is unable to automatically fetch the Jellyseerr API key.**
     """
 
     image: NonEmptyStr = "fallenbagel/jellyseerr"  # type: ignore[assignment]
@@ -164,6 +165,12 @@ class JellyseerrInstanceConfig(_JellyseerrInstanceConfig):
             "image": f"{self.image}:{self.version or 'latest'}",
             "volumes": {service_name: "/app/config"},
         }
+
+    def _resolve(self, secrets: JellyseerrSecrets) -> Self:
+        resolved = self.copy(deep=True)
+        resolved.settings.services.radarr._resolve_(secrets)
+        resolved.settings.services.sonarr._resolve_(secrets)
+        return resolved
 
 
 class JellyseerrConfig(JellyseerrInstanceConfig):

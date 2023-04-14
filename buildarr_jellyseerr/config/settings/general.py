@@ -24,7 +24,7 @@ from typing import List, Optional, Set
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr
-from pydantic import AnyHttpUrl, Field
+from pydantic import AnyHttpUrl
 from typing_extensions import Self
 
 from ...api import api_get, api_post
@@ -54,21 +54,18 @@ class JellyseerrGeneralSettings(JellyseerrConfigBase):
 
     enable_image_caching: bool = False
 
-    display_language: LowerCaseNonEmptyStr = Field(  # type: ignore[assignment]
-        "en",
-        alias="locale",
-    )
+    display_language: LowerCaseNonEmptyStr = "en"  # type: ignore[assignment]
     """
     case-insensitive NonEmptyStr, get values from API schema. Two-character English code.
     """
 
-    discover_region: Optional[UpperCaseStr] = Field(None, alias="region")
+    discover_region: Optional[UpperCaseStr] = None
     """
     None is same as "All Regions". Get values from API schema
     Two-character country code
     """
 
-    discover_languages: Set[LowerCaseStr] = Field(set(), alias="original_languages")
+    discover_languages: Set[LowerCaseStr] = set()
     """
     Empty is same as "All Languages". Two character lower-case language code.
     Set[case-insensitive NonEmptyStr], get values from API schema

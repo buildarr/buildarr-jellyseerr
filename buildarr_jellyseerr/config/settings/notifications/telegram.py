@@ -22,7 +22,7 @@ from __future__ import annotations
 from typing import List, Optional, Set
 
 from buildarr.config import RemoteMapEntry
-from pydantic import Field, SecretStr
+from pydantic import SecretStr
 
 from .notification_types import NotificationTypesSettingsBase
 
@@ -32,9 +32,9 @@ class TelegramSettings(NotificationTypesSettingsBase):
     Jellyseerr Telegram notifications settings.
     """
 
-    access_token: Optional[SecretStr] = Field(None, alias="bot_authorization_token")
+    access_token: Optional[SecretStr] = None
 
-    username: Optional[str] = Field(None, alias="bot_username")
+    username: Optional[str] = None
 
     chat_id: Optional[str] = None
 

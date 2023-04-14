@@ -22,14 +22,17 @@ from __future__ import annotations
 import functools
 
 from getpass import getpass
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 import click
-import click_params  # type: ignore[import]
 
 from .config import JellyseerrInstanceConfig
 from .manager import JellyseerrManager
 from .secrets import JellyseerrSecrets
+
+if TYPE_CHECKING:
+    from urllib.parse import ParseResult as Url
 
 HOSTNAME_PORT_TUPLE_LENGTH = 2
 
@@ -49,7 +52,7 @@ def jellyseerr():
         "The configuration is dumped to standard output in Buildarr-compatible YAML format."
     ),
 )
-@click.argument("url", type=click_params.URL)
+@click.argument("url", type=urlparse)
 @click.option(
     "-k",
     "--api-key",
@@ -58,15 +61,14 @@ def jellyseerr():
     default=functools.partial(getpass, "Jellyseerr instance API key: "),
     help="API key of the Jellyseerr instance. The user will be prompted if undefined.",
 )
-def dump_config(url: str, api_key: str) -> int:
+def dump_config(url: Url, api_key: str) -> int:
     """
     Dump configuration from a remote Jellyseerr instance.
     The configuration is dumped to standard output in Buildarr-compatible YAML format.
     """
 
-    url_obj = urlparse(url)
-    protocol = url_obj.scheme
-    hostname_port = url_obj.netloc.split(":", 1)
+    protocol = url.scheme
+    hostname_port = url.netloc.split(":", 1)
     hostname = hostname_port[0]
     port = (
         int(hostname_port[1])
@@ -74,21 +76,13 @@ def dump_config(url: str, api_key: str) -> int:
         else (443 if protocol == "https" else 80)
     )
 
+    instance_config = JellyseerrInstanceConfig(hostname=hostname, port=port, protocol=protocol)
+    secrets = JellyseerrSecrets(hostname=hostname, port=port, protocol=protocol, api_key=api_key)
+
     click.echo(
         JellyseerrManager()
-        .from_remote(
-            instance_config=JellyseerrInstanceConfig(
-                hostname=hostname,
-                port=port,
-                protocol=protocol,
-            ),
-            secrets=JellyseerrSecrets(
-                hostname=hostname,
-                port=port,
-                protocol=protocol,
-                api_key=api_key,
-            ),
-        )
+        .from_remote(instance_config=instance_config, secrets=secrets)
+        ._resolve(secrets=secrets)
         .yaml(),
     )
 

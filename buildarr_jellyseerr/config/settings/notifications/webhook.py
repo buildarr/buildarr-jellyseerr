@@ -23,7 +23,7 @@ from typing import List, Optional, Set
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr
-from pydantic import AnyHttpUrl, Field, SecretStr
+from pydantic import AnyHttpUrl, SecretStr
 
 from .notification_types import NotificationTypesSettingsBase
 
@@ -40,7 +40,7 @@ class WebhookSettings(NotificationTypesSettingsBase):
 
     authorization_header: Optional[SecretStr] = None
 
-    payload_template: NonEmptyStr = Field("<JSON template>", alias="json_payload")
+    payload_template: NonEmptyStr = "<JSON template>"
 
     _type: str = "webhook"
     _required_if_enabled: Set[str] = {"webhook_url"}

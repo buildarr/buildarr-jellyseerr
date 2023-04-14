@@ -22,7 +22,7 @@ from __future__ import annotations
 from typing import List, Optional, Set
 
 from buildarr.config import RemoteMapEntry
-from pydantic import AnyHttpUrl, Field, SecretStr
+from pydantic import AnyHttpUrl, SecretStr
 
 from .notification_types import NotificationTypesSettingsBase
 
@@ -34,7 +34,7 @@ class GotifySettings(NotificationTypesSettingsBase):
 
     server_url: Optional[AnyHttpUrl] = None
 
-    access_token: Optional[SecretStr] = Field(None, alias="application_token")
+    access_token: Optional[SecretStr] = None
 
     _type: str = "gotify"
     _required_if_enabled: Set[str] = {"server_url", "access_token"}

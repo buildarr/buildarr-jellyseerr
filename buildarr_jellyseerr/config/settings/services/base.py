@@ -26,7 +26,7 @@ from typing import List, Optional
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr, Port
-from pydantic import AnyHttpUrl, Field
+from pydantic import AnyHttpUrl
 
 from ...types import JellyseerrConfigBase
 
@@ -38,17 +38,17 @@ class ArrBase(JellyseerrConfigBase):
     The following configuration attributes are available for an app sync profile.
     """
 
-    is_default_server: bool = Field(False, alias="default_server")
+    is_default_server: bool = False
 
-    is_4k_server: bool = Field(False, alias="4k_server")
+    is_4k_server: bool = False
 
-    hostname: NonEmptyStr = Field(..., alias="host")
+    hostname: NonEmptyStr
 
     port: Port = 8989  # type: ignore[assignment]
 
     use_ssl: bool = False
 
-    url_base: Optional[str] = Field(None, alias="base_url")
+    url_base: Optional[str] = None
 
     external_url: Optional[AnyHttpUrl] = None
 

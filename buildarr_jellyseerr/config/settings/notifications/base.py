@@ -23,7 +23,7 @@ from http import HTTPStatus
 from typing import List, Set
 
 from buildarr.config import RemoteMapEntry
-from pydantic import Field, SecretStr
+from pydantic import SecretStr
 from typing_extensions import Self
 
 from ....api import api_get, api_post
@@ -36,7 +36,7 @@ class NotificationsSettingsBase(JellyseerrConfigBase):
     Jellyseerr notifications settings base class.
     """
 
-    enable: bool = Field(False, alias="enable_agent")
+    enable: bool = False
 
     _type: str
     _required_if_enabled: Set[str] = set()
