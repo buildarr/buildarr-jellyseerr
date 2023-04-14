@@ -98,9 +98,8 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
                 )
             except JellyseerrAPIError as err:
                 error_message = str(err)
-                if (
-                    err.status_code == HTTPStatus.INTERNAL_SERVER_ERROR and
-                    all(word in error_message for word in ("Jellyfin", "configured"))
+                if err.status_code == HTTPStatus.INTERNAL_SERVER_ERROR and all(
+                    word in error_message for word in ("Jellyfin", "configured")
                 ):
                     raise RuntimeError(
                         "Jellyseerr already has been configured with a Jellyfin instance "

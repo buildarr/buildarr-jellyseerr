@@ -238,8 +238,7 @@ class Radarr(ArrBase):
             return True
         return False
 
-    def _delete_remote(self, tree: str, secrets: JellyseerrSecrets, service_id: int) -> None:
-        logger.info("%s: (...) -> (deleted)", tree)
+    def _delete_remote(self, secrets: JellyseerrSecrets, service_id: int) -> None:
         api_delete(secrets, f"/api/v1/settings/radarr/{service_id}")
 
 
@@ -359,6 +358,22 @@ class RadarrSettings(JellyseerrConfigBase):
                 service_name=service_name,
             ):
                 changed = True
+        # Return whether or not the remote instance was changed.
+        return changed
+
+    def delete_remote(
+        self,
+        tree: str,
+        secrets: JellyseerrSecrets,
+        remote: Self,
+    ) -> bool:
+        # Track whether or not any changes have been made on the remote instance.
+        changed = False
+        # Pull API objects and metadata required during the update operation.
+        service_ids = {
+            api_service["name"]: api_service["id"]
+            for api_service in api_get(secrets, "/api/v1/settings/radarr")
+        }
         # Traverse the remote definitions, and see if there are any remote definitions
         # that do not exist in the local configuration.
         # If `delete_unmanaged` is enabled, delete it from the remote.
@@ -368,11 +383,8 @@ class RadarrSettings(JellyseerrConfigBase):
             if service_name not in self.definitions:
                 profile_tree = f"{tree}.definitions[{repr(service_name)}]"
                 if self.delete_unmanaged:
-                    service._delete_remote(
-                        tree=profile_tree,
-                        secrets=secrets,
-                        service_id=service_ids[service_name],
-                    )
+                    logger.info("%s: (...) -> (deleted)", profile_tree)
+                    service._delete_remote(secrets=secrets, service_id=service_ids[service_name])
                     changed = True
                 else:
                     logger.debug("%s: (...) (unmanaged)", profile_tree)
