@@ -337,6 +337,32 @@ class RadarrSettings(JellyseerrConfigBase):
     Radarr service definitions are defined here.
     """
 
+    @validator("definitions")
+    def only_one_default_instance_per_type(self, value: Dict[str, Radarr]) -> Dict[str, Radarr]:
+        default_instances: List[str] = []
+        for instance_name, instance in value.items():
+            if instance.is_default_server and not instance.is_4k_server:
+                default_instances.append(instance_name)
+        if len(default_instances) > 1:
+            raise ValueError(
+                "more than one instance set as the non-4K default: "
+                f"{', '.join(repr(instance_name) for instance_name in default_instances)}",
+            )
+        return value
+
+    @validator("definitions")
+    def only_one_default_4k_instance_per_type(self, value: Dict[str, Radarr]) -> Dict[str, Radarr]:
+        default_4k_instances: List[str] = []
+        for instance_name, instance in value.items():
+            if instance.is_default_server and instance.is_4k_server:
+                default_4k_instances.append(instance_name)
+        if len(default_4k_instances) > 1:
+            raise ValueError(
+                "more than one instance set as the 4K default: "
+                f"{', '.join(repr(instance_name) for instance_name in default_4k_instances)}",
+            )
+        return value
+
     @classmethod
     def from_remote(cls, secrets: JellyseerrSecrets) -> Self:
         return cls(
