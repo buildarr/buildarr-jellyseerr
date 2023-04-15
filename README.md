@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/buildarr-jellyseerr)](https://pypi.org/project/buildarr-jellyseerr) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/buildarr-jellyseerr)  [![GitHub](https://img.shields.io/github/license/buildarr/buildarr-jellyseerr)](https://github.com/buildarr/buildarr-jellyseerr/blob/main/LICENSE) ![Pre-commit hooks](https://github.com/buildarr/buildarr-jellyseerr/actions/workflows/pre-commit.yml/badge.svg) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-The Buildarr Prowlarr plugin (`buildarr-jellyseerr`) is a plugin for Buildarr that adds the capability to configure and manage [Jellyseerr](https://github.com/Fallenbagel/jellyseerr) instances.
+The Buildarr Jellyseerr plugin (`buildarr-jellyseerr`) is a plugin for Buildarr that adds the capability to configure and manage [Jellyseerr](https://github.com/Fallenbagel/jellyseerr) instances.
 
 Jellyseerr is an application that links with both Jellyfin/Plex and your Sonarr/Radarr instances. It allows your users to login using their Jellyfin/Plex credentials, browse available media online, and make media requests for new content.
 
