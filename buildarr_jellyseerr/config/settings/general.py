@@ -136,9 +136,10 @@ class JellyseerrGeneralSettings(JellyseerrConfigBase):
         ("enable_proxy_support", "trustProxy", {}),
         ("enable_csrf_protection", "csrfProtection", {}),
         ("enable_image_caching", "cacheImages", {}),
+        ("display_language", "locale", {}),
         (
             "discover_languages",
-            "locale",
+            "originalLanguage",
             {
                 "decoder": lambda v: set(ln.strip() for ln in v.split(",")) if v else set(),
                 "encoder": lambda v: ",".join(sorted(v)) if v else "",
