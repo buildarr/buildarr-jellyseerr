@@ -136,7 +136,11 @@ class JellyseerrGeneralSettings(JellyseerrConfigBase):
         ("enable_proxy_support", "trustProxy", {}),
         ("enable_csrf_protection", "csrfProtection", {}),
         ("enable_image_caching", "cacheImages", {}),
-        ("display_language", "locale", {}),
+        (
+            "display_language",
+            "locale",
+            {"decoder": lambda v: v or "en"},  # Sometimes can be an empty string.
+        ),
         (
             "discover_languages",
             "originalLanguage",
@@ -168,6 +172,7 @@ class JellyseerrGeneralSettings(JellyseerrConfigBase):
             remote,
             self._remote_map,
             check_unmanaged=check_unmanaged,
+            set_unchanged=True,
         )
         if changed:
             api_post(
