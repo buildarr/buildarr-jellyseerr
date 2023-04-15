@@ -218,14 +218,14 @@ class JellyseerrJellyfinSettings(JellyseerrConfigBase):
             # only to enable or disable libraries.
             self._get_remote_map(api_get(secrets, "/api/v1/settings/jellyfin")["libraries"]),
             check_unmanaged=check_unmanaged,
+            set_unchanged=True,
         )
-        if "libraries" in remote_attrs:
+        if changed:
             api_get(
                 secrets,
                 f"/api/v1/settings/jellyfin/library?enable={','.join(remote_attrs['libraries'])}",
             )
             del remote_attrs["libraries"]
-        if changed:
             api_post(
                 secrets,
                 "/api/v1/settings/jellyfin",
