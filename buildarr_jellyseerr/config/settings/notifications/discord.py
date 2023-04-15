@@ -29,7 +29,9 @@ from .notification_types import NotificationTypesSettingsBase
 
 class DiscordSettings(NotificationTypesSettingsBase):
     """
-    Jellyseerr email notifications settings.
+    Send notifications to a Discord server using a webhook URL.
+
+    This service supports setting fine-grained notification types using `notification_types`.
     """
 
     webhook_url: Optional[AnyHttpUrl] = None

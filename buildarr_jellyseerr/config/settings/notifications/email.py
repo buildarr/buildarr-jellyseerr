@@ -63,30 +63,101 @@ class EncryptionMethod(BaseEnum):
 
 class EmailSettings(NotificationsSettingsBase):
     """
-    Jellyseerr email notifications settings.
+    Send notification emails via an SMTP server.
+
+    In order for Jellyseerr to send emails to Jellyseerr users, an SMTP server
+    needs to be configured here.
+
+    !!! note
+
+        If the [`jellyseerr.settings.general.application_url`](
+        ../general/#buildarr_jellyseerr.config.settings.general
+        .JellyseerrGeneralSettings.application_url
+        ) attribute is configured, Jellyseerr will explicitly
+        set the origin server hostname when connecting to the SMTP host.
     """
 
     require_user_email: bool = False
+    """
+    Require Jellyseerr users to have an email address configured, so emails can be sent to it.
+    """
 
     sender_name: Optional[str] = "Jellyseerr"
+    """
+    Configure a friendly name for the email sender.
+    """
 
     sender_address: Optional[EmailStr] = None
+    """
+    The `From` email address to send the email as.
+
+    If sending email to public mailboxes, this should be set to an email address
+    owned/controlled by the server being used to send the mail.
+
+    **Required if email notifications are enabled.**
+    """
 
     smtp_host: Optional[str] = None
+    """
+    The SMTP server to sent mail from.
 
-    smtp_port: Port = 587  # type: ignore[assignment]
+    **Required if email notifications are enabled.**
+    """
 
     encryption_method: EncryptionMethod = EncryptionMethod.starttls_prefer
+    """
+    The encryption method to use to communicate with the SMTP server.
+
+    Values (in order of security):
+
+    * `smtps` - Implicit TLS (SMTPS)
+    * `starttls-strict` - Require STARTTLS
+    * `starttls-prefer` - Use STARTTLS if available, unencrypted fallback (**not recommended**)
+    * `none` - No encryption (**not recommended**)
+    """
+
+    smtp_port: Port = 587  # type: ignore[assignment]
+    """
+    The mail submission port of the SMTP server.
+
+    The default is the standard SMTP submission port, used for STARTTLS.
+    If using implicit TLS (SMTPS), this should be set to the standard port of `465`.
+    """
 
     allow_selfsigned_certificates: bool = False
+    """
+    Allow self-signed certificates for the SMTP server host certificate.
+
+    Generally this option shouldn't be enabled, even on a private mail server,
+    as any mail server can get free TLS certificates using services such as
+    [Let's Encrypt](https://letsencrypt.org).
+
+    **Never enable this option when using a public email service.**
+    """
 
     smtp_username: Optional[str] = None
+    """
+    SMTP server username, if required (which is usually the case).
+    """
 
     smtp_password: Optional[SecretStr] = None
+    """
+    SMTP server user password, if required (which is usually the case).
+    """
 
     pgp_private_key: Optional[SecretStr] = None
+    """
+    An optional PGP private key to use to sign (and if configured by users, encrypt) sent emails.
+
+    When configuring the PGP keys, be sure to keep the entire contents of the key intact.
+    For example, private keys always begin with `-----BEGIN PGP PRIVATE KEY BLOCK-----`
+    and end with `-----END PGP PRIVATE KEY BLOCK-----`.
+    """
 
     pgp_password: Optional[SecretStr] = None
+    """
+    An optional password for unlocking the PGP private key.
+    """
 
     _type: str = "email"
     _required_if_enabled: Set[str] = {"sender_name", "sender_address", "smtp_host"}

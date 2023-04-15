@@ -30,6 +30,8 @@ from .notification_types import NotificationTypesSettingsBase
 class SlackSettings(NotificationTypesSettingsBase):
     """
     Jellyseerr Slack notifications settings.
+
+    This service supports setting fine-grained notification types using `notification_types`.
     """
 
     webhook_url: Optional[AnyHttpUrl] = None

@@ -30,6 +30,8 @@ from .notification_types import NotificationTypesSettingsBase
 class PushbulletSettings(NotificationTypesSettingsBase):
     """
     Jellyseerr Pushbullet notifications settings.
+
+    This service supports setting fine-grained notification types using `notification_types`.
     """
 
     access_token: Optional[SecretStr] = None

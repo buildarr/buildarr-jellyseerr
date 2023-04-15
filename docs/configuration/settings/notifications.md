@@ -6,20 +6,33 @@ These are not only for Jellyseerr to communicate with the outside world, they ca
 for monitoring since the user can be alerted, by a service of their choice, when
 some kind of event (or problem) occurs.
 
-## Configuration
+## Enabling notifications
+
+##### ::: buildarr_jellyseerr.config.settings.notifications.base.NotificationsSettingsBase
+    options:
+      members:
+        - enable
+      show_root_heading: false
+      show_source: false
+
+## Configuring notification types
+
+##### ::: buildarr_jellyseerr.config.settings.notifications.notification_types.NotificationTypesSettingsBase
+    options:
+      members:
+        - notification_types
+      show_root_heading: false
+      show_source: false
 
 ## Discord
 
 ##### ::: buildarr_jellyseerr.config.settings.notifications.discord.DiscordSettings
     options:
       members:
-        - type
-        - webook_url
+        - webhook_url
         - username
-        - avatar
-        - host
-        - on_grab_fields
-        - on_import_fields
+        - avatar_url
+        - enable_mentions
       show_root_heading: false
       show_source: false
 
@@ -28,16 +41,17 @@ some kind of event (or problem) occurs.
 ##### ::: buildarr_jellyseerr.config.settings.notifications.email.EmailSettings
     options:
       members:
-        - type
-        - server
-        - port
-        - use_encryption
-        - username
-        - password
-        - from_address
-        - recipient_addresses
-        - cc_addresses
-        - bcc_addresses
+        - require_user_email
+        - sender_name
+        - sender_address
+        - smtp_host
+        - smtp_port
+        - encryption_method
+        - allow_selfsigned_certificates
+        - smtp_username
+        - smtp_password
+        - pgp_private_key
+        - pgp_password
       show_root_heading: false
       show_source: false
 
@@ -46,10 +60,8 @@ some kind of event (or problem) occurs.
 ##### ::: buildarr_jellyseerr.config.settings.notifications.gotify.GotifySettings
     options:
       members:
-        - type
-        - server
-        - app_token
-        - priority
+        - server_url
+        - access_token
       show_root_heading: false
       show_source: false
 
@@ -58,10 +70,8 @@ some kind of event (or problem) occurs.
 ##### ::: buildarr_jellyseerr.config.settings.notifications.lunasea.LunaseaSettings
     options:
       members:
-        - type
-        - api_key
-        - device_names
-        - priority
+        - webhook_url
+        - profile_name
       show_root_heading: false
       show_source: false
 
@@ -70,11 +80,8 @@ some kind of event (or problem) occurs.
 ##### ::: buildarr_jellyseerr.config.settings.notifications.pushbullet.PushbulletSettings
     options:
       members:
-        - type
-        - api_key
-        - device_ids
-        - channel_tags
-        - sender_id
+        - access_token
+        - channel_tag
       show_root_heading: false
       show_source: false
 
@@ -83,14 +90,8 @@ some kind of event (or problem) occurs.
 ##### ::: buildarr_jellyseerr.config.settings.notifications.pushover.PushoverSettings
     options:
       members:
-        - type
-        - user_key
         - api_key
-        - devices
-        - priority
-        - retry
-        - expire
-        - sound
+        - user_key
       show_root_heading: false
       show_source: false
 
@@ -99,11 +100,7 @@ some kind of event (or problem) occurs.
 ##### ::: buildarr_jellyseerr.config.settings.notifications.slack.SlackSettings
     options:
       members:
-        - type
         - webhook_url
-        - username
-        - icon
-        - channel
       show_root_heading: false
       show_source: false
 
@@ -112,8 +109,8 @@ some kind of event (or problem) occurs.
 ##### ::: buildarr_jellyseerr.config.settings.notifications.telegram.TelegramSettings
     options:
       members:
-        - type
-        - bot_token
+        - access_token
+        - username
         - chat_id
         - send_silently
       show_root_heading: false

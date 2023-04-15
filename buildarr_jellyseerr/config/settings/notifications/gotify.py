@@ -30,6 +30,8 @@ from .notification_types import NotificationTypesSettingsBase
 class GotifySettings(NotificationTypesSettingsBase):
     """
     Jellyseerr Gotify notifications settings.
+
+    This service supports setting fine-grained notification types using `notification_types`.
     """
 
     server_url: Optional[AnyHttpUrl] = None

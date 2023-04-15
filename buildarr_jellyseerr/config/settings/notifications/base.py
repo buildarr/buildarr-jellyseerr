@@ -33,10 +33,24 @@ from ...types import JellyseerrConfigBase
 
 class NotificationsSettingsBase(JellyseerrConfigBase):
     """
-    Jellyseerr notifications settings base class.
+    To enable push notifications to a service, simply set `enable: true` in the settings,
+    as shown below.
+
+    ```yaml
+    jellyseerr:
+      settings:
+        notifications:
+          webpush:
+            enable: true
+    ```
     """
 
     enable: bool = False
+    """
+    Enable sending notifications to a service.
+
+    If enabled, some configuration attributes for the service will be required.
+    """
 
     _type: str
     _required_if_enabled: Set[str] = set()
