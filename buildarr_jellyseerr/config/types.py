@@ -27,9 +27,9 @@ if TYPE_CHECKING:
     from ..secrets import JellyseerrSecrets
 
     class JellyseerrConfigBase(ConfigBase[JellyseerrSecrets]):
-        ...
+        pass
 
 else:
 
     class JellyseerrConfigBase(ConfigBase):
-        ...
+        pass

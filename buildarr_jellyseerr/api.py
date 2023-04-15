@@ -51,7 +51,7 @@ def api_get(
     Send a `GET` request to a Jellyseerr instance.
 
     Args:
-        secrets (JellyseerrSecrets): Jellyseerr secrets metadata.
+        secrets (Union[JellyseerrSecrets, str]): Jellyseerr secrets metadata, or host URL.
         api_url (str): Jellyseerr API command.
         expected_status_code (HTTPStatus): Expected response status. Defaults to `200 OK`.
 
@@ -98,7 +98,7 @@ def api_post(
     Send a `POST` request to a Jellyseerr instance.
 
     Args:
-        secrets (JellyseerrSecrets): Jellyseerr secrets metadata.
+        secrets (Union[JellyseerrSecrets, str]): Jellyseerr secrets metadata, or host URL.
         api_url (str): Jellyseerr API command.
         req (Any): Request (JSON-serialisable).
         expected_status_code (HTTPStatus): Expected response status. Defaults to `201 Created`.
@@ -147,7 +147,7 @@ def api_put(
     Send a `PUT` request to a Jellyseerr instance.
 
     Args:
-        secrets (JellyseerrSecrets): Jellyseerr secrets metadata.
+        secrets (Union[JellyseerrSecrets, str]): Jellyseerr secrets metadata, or host URL.
         api_url (str): Jellyseerr API command.
         req (Any): Request (JSON-serialisable).
         expected_status_code (HTTPStatus): Expected response status. Defaults to `200 OK`.
@@ -195,7 +195,7 @@ def api_delete(
     Send a `DELETE` request to a Jellyseerr instance.
 
     Args:
-        secrets (JellyseerrSecrets): Jellyseerr secrets metadata.
+        secrets (Union[JellyseerrSecrets, str]): Jellyseerr secrets metadata, or host URL.
         api_url (str): Jellyseerr API command.
         expected_status_code (HTTPStatus): Expected response status. Defaults to `200 OK`.
     """

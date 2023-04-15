@@ -10,5 +10,3 @@
         - global_series_request_limit
         - global_series_request_days
         - default_permissions
-      show_root_heading: false
-      show_source: false

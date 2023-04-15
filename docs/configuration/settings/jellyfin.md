@@ -50,8 +50,6 @@ Once Jellyseerr is initialised, with the exception of `libraries`, the below att
         - password
         - email_address
         - libraries
-      show_root_heading: false
-      show_source: false
 
 ## Configuration
 
@@ -64,5 +62,3 @@ These attributes can be modified at any time.
       members:
         - external_url
         - libraries
-      show_root_heading: false
-      show_source: false

@@ -36,19 +36,15 @@ if TYPE_CHECKING:
     from .config import JellyseerrConfig
 
     class _JellyseerrSecrets(SecretsPlugin[JellyseerrConfig]):
-        ...
+        pass
 
 else:
 
     class _JellyseerrSecrets(SecretsPlugin):
-        ...
+        pass
 
 
 class JellyseerrSecrets(_JellyseerrSecrets):
-    """
-    Jellyseerr API secrets.
-    """
-
     hostname: NonEmptyStr
     port: Port
     protocol: JellyseerrProtocol

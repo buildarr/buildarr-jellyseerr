@@ -13,5 +13,3 @@
         - discover_languages
         - hide_available_media
         - allow_partial_series_requests
-      show_root_heading: false
-      show_source: false

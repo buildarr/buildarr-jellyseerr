@@ -33,12 +33,12 @@ if TYPE_CHECKING:
     from ..secrets import JellyseerrSecrets
 
     class _JellyseerrInstanceConfig(ConfigPlugin[JellyseerrSecrets]):
-        ...
+        pass
 
 else:
 
     class _JellyseerrInstanceConfig(ConfigPlugin):
-        ...
+        pass
 
 
 class JellyseerrInstanceConfig(_JellyseerrInstanceConfig):

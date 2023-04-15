@@ -28,10 +28,6 @@ from .users import JellyseerrUsersSettings
 
 
 class JellyseerrSettings(JellyseerrConfigBase):
-    """
-    Jellyseerr settings, used to configure a remote Jellyseerr instance.
-    """
-
     general: JellyseerrGeneralSettings = JellyseerrGeneralSettings()
     jellyfin: JellyseerrJellyfinSettings = JellyseerrJellyfinSettings()
     users: JellyseerrUsersSettings = JellyseerrUsersSettings()

@@ -29,10 +29,6 @@ from .secrets import JellyseerrSecrets
 
 
 class JellyseerrPlugin(Plugin):
-    """
-    Jellyseerr plugin class that Buildarr reads to process Jellyseerr instances.
-    """
-
     cli = jellyseerr
     config = JellyseerrConfig
     manager = JellyseerrManager

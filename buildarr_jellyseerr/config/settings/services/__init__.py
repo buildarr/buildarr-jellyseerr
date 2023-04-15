@@ -25,9 +25,5 @@ from .sonarr import SonarrSettings
 
 
 class JellyseerrServicesSettings(JellyseerrConfigBase):
-    """
-    Jellyseerr services settings.
-    """
-
     radarr: RadarrSettings = RadarrSettings()
     sonarr: SonarrSettings = SonarrSettings()
