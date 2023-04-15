@@ -74,24 +74,28 @@ class Permission(BaseEnum):
 
     @classmethod
     def set_decoder(cls, permissions_encoded: int) -> Set[Permission]:
-        #
+        # Handle the case where the user has no permissions, or is an admin.
         if not permissions_encoded:
             return set()
         if cls.admin.is_permitted(permissions_encoded):
             return {cls.admin}
-        #
+        # Collect all allowed permissions into a set.
         permissions: Set[Permission] = set()
-        #
+        # Add the group permission for managing users, if allowed.
         if cls.manage_users.is_permitted(permissions_encoded):
             permissions.add(cls.manage_users)
-        #
+        # Add the group permission for managing issues, if allowed.
+        # Alternatively, add the individual permissions within the group,
+        # if allowed separately.
         if cls.manage_issues.is_permitted(permissions_encoded):
             permissions.add(cls.manage_issues)
         else:
             for permission in (cls.create_issues, cls.view_issues):
                 if permission.is_permitted(permissions_encoded):
                     permissions.add(permission)
-        #
+        # Add the group permission for managing requests, if allowed.
+        # Alternatively, add the individual permissions within the group,
+        # if allowed separately.
         if cls.manage_requests.is_permitted(permissions_encoded):
             permissions.add(cls.manage_requests)
         else:
@@ -103,21 +107,29 @@ class Permission(BaseEnum):
             ):
                 if permission.is_permitted(permissions_encoded):
                     permissions.add(permission)
-        #
+        # Add the group permission for making non-4K media requests, if allowed.
+        # Alternatively, add the individual permissions within the group,
+        # if allowed separately.
         if cls.request.is_permitted(permissions_encoded):
             permissions.add(cls.request)
         else:
             for permission in (cls.request_movie, cls.request_series):
                 if permission.is_permitted(permissions_encoded):
                     permissions.add(permission)
-        #
+        # Add the group permission for making 4K media requests, if allowed.
+        # Alternatively, add the individual permissions within the group,
+        # if allowed separately.
         if cls.request_4k:
             permissions.add(cls.request_4k)
         else:
             for permission in (cls.request_4k_movie, cls.request_4k_series):
                 if permission.is_permitted(permissions_encoded):
                     permissions.add(permission)
-        #
+        # Add the group permission for auto-requesting from the
+        # Plex Watchlist, if allowed.
+        # Check if other permissions these depend on are also allowed.
+        # Alternatively, add the individual permissions within the group,
+        # if allowed separately.
         if cls.auto_request.is_permitted(permissions_encoded):
             if cls.request not in permissions:
                 cls._permission_error(cls.auto_request, cls.request)
@@ -131,7 +143,10 @@ class Permission(BaseEnum):
                 if cls.request not in permissions or cls.request_series not in permissions:
                     cls._permission_error(cls.auto_request_series, cls.request_series)
                 permissions.add(cls.auto_request_series)
-        #
+        # Add the group permission for auto-approving non-4K media requests, if allowed.
+        # Check if other permissions these depend on are also allowed.
+        # Alternatively, add the individual permissions within the group,
+        # if allowed separately.
         if cls.auto_approve.is_permitted(permissions_encoded):
             if cls.request not in permissions:
                 cls._permission_error(cls.auto_approve, cls.request)
@@ -145,7 +160,10 @@ class Permission(BaseEnum):
                 if cls.request not in permissions or cls.request_series not in permissions:
                     cls._permission_error(cls.auto_approve_series, cls.request_series)
                 permissions.add(cls.auto_approve_series)
-        #
+        # Add the group permission for auto-approving 4K media requests, if allowed.
+        # Check if other permissions these depend on are also allowed.
+        # Alternatively, add the individual permissions within the group,
+        # if allowed separately.
         if cls.auto_approve_4k.is_permitted(permissions_encoded):
             if cls.request_4k not in permissions:
                 cls._permission_error(cls.auto_approve_4k, cls.request_4k)
@@ -159,7 +177,7 @@ class Permission(BaseEnum):
                 if cls.request_4k not in permissions or cls.request_4k_series not in permissions:
                     cls._permission_error(cls.auto_approve_4k_series, cls.request_4k_series)
                 permissions.add(cls.auto_approve_4k_series)
-        #
+        # Return the final permission set.
         return permissions
 
     @classmethod

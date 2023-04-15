@@ -85,7 +85,7 @@ class NotificationsSettingsBase(JellyseerrConfigBase):
         remote: Self,
         check_unmanaged: bool = False,
     ) -> bool:
-        #
+        # Run update checks for the base class attributes.
         base_changed, base_attrs = self.get_update_remote_attrs(
             tree,
             remote,
@@ -93,7 +93,8 @@ class NotificationsSettingsBase(JellyseerrConfigBase):
             check_unmanaged=check_unmanaged,
             set_unchanged=True,
         )
-        #
+        # Run update checks for the implementing class attributes,
+        # if additional attributes were defined.
         try:
             remote_map = self._get_remote_map()
             options_changed, options_attrs = self.get_update_remote_attrs(
@@ -107,7 +108,7 @@ class NotificationsSettingsBase(JellyseerrConfigBase):
             remote_map = []
             options_changed = False
             options_attrs = {}
-        #
+        # Check if attributes in the service that are required when enabled, have been defined.
         if self._required_if_enabled and base_attrs["enabled"]:
             local_remote_name = {entry[0]: entry[1] for entry in remote_map}
             undefined_attrs: List[str] = []
@@ -125,7 +126,7 @@ class NotificationsSettingsBase(JellyseerrConfigBase):
                     "must not be empty when 'enable' is True: "
                     f"{', '.join(repr(attr_name) for attr_name in undefined_attrs)}",
                 )
-        #
+        # If changes were found, update the remote instance.
         if base_changed or options_changed:
             api_attrs = api_get(secrets, f"/api/v1/settings/notifications/{self._type}")
             api_post(
