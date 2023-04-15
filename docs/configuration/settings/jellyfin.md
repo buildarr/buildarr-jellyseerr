@@ -4,11 +4,11 @@
 
 Jellyseerr links with Jellyfin, allows users to login to Jellyseerr using their Jellyfin credentials, and request media not yet available in Jellyfin for download.
 
-The media server project Jellyfin was forked from, [Emby](https://emby.media), can also be connected to using the same `jellyfin` configuration section.
+Jellyseerr can also conect to the media server Jellyfin was forked from, [Emby](https://emby.media), using the same `jellyfin` configuration section.
 
 ## Initialisation
 
-Before Jellyseerr can be used by users, the Jellyfin admin user credentials and libraries to scan need to be configured.
+Before Jellyseerr can be made available to users, the Jellyfin admin user credentials and libraries to scan need to be configured.
 
 When setting up Jellyseerr manually, this is done by navigating to `https://localhost:5055/setup` and following the on-screen instructions.
 

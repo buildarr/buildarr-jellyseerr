@@ -3,14 +3,12 @@
 ##### ::: buildarr_jellyseerr.config.settings.users.JellyseerrUsersSettings
     options:
       members:
-        - first_day_of_week
-        - week_column_header
-        - short_date_format
-        - long_date_format
-        - time_format
-        - show_relative_dates
-        - enable_color_impaired_mode
-        - theme
-        - ui_language
+        - enable_local_signin
+        - enable_new_jellyfin_signin
+        - global_movie_request_limit
+        - global_movie_request_days
+        - global_series_request_limit
+        - global_series_request_days
+        - default_permissions
       show_root_heading: false
       show_source: false

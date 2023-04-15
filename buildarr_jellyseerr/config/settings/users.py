@@ -45,23 +45,23 @@ class Permission(BaseEnum):
     vote = 64
     auto_approve = 128
     auto_approve_movie = 256
-    auto_approve_tv = 512
+    auto_approve_series = 512
     request_4k = 1024
     request_4k_movie = 2048
-    request_4k_tv = 4096
+    request_4k_series = 4096
     request_advanced = 8192
     request_view = 16384
     auto_approve_4k = 32768
     auto_approve_4k_movie = 65536
-    auto_approve_4k_tv = 131072
+    auto_approve_4k_series = 131072
     request_movie = 262144
-    request_tv = 524288
+    request_series = 524288
     manage_issues = 1048576
     view_issues = 2097152
     create_issues = 4194304
     auto_request = 8388608
     auto_request_movie = 16777216
-    auto_request_tv = 33554432
+    auto_request_series = 33554432
     recent_view = 67108864
     watchlist_view = 134217728
 
@@ -107,14 +107,14 @@ class Permission(BaseEnum):
         if cls.request.is_permitted(permissions_encoded):
             permissions.add(cls.request)
         else:
-            for permission in (cls.request_movie, cls.request_tv):
+            for permission in (cls.request_movie, cls.request_series):
                 if permission.is_permitted(permissions_encoded):
                     permissions.add(permission)
         #
         if cls.request_4k:
             permissions.add(cls.request_4k)
         else:
-            for permission in (cls.request_4k_movie, cls.request_4k_tv):
+            for permission in (cls.request_4k_movie, cls.request_4k_series):
                 if permission.is_permitted(permissions_encoded):
                     permissions.add(permission)
         #
@@ -127,10 +127,10 @@ class Permission(BaseEnum):
                 if cls.request not in permissions or cls.request_movie not in permissions:
                     cls._permission_error(cls.auto_request_movie, cls.request_movie)
                 permissions.add(cls.auto_request_movie)
-            if cls.auto_request_tv.is_permitted(permissions_encoded):
-                if cls.request not in permissions or cls.request_tv not in permissions:
-                    cls._permission_error(cls.auto_request_tv, cls.request_tv)
-                permissions.add(cls.auto_request_tv)
+            if cls.auto_request_series.is_permitted(permissions_encoded):
+                if cls.request not in permissions or cls.request_series not in permissions:
+                    cls._permission_error(cls.auto_request_series, cls.request_series)
+                permissions.add(cls.auto_request_series)
         #
         if cls.auto_approve.is_permitted(permissions_encoded):
             if cls.request not in permissions:
@@ -141,10 +141,10 @@ class Permission(BaseEnum):
                 if cls.request not in permissions or cls.request_movie not in permissions:
                     cls._permission_error(cls.auto_approve_movie, cls.request_movie)
                 permissions.add(cls.auto_approve_movie)
-            if cls.auto_approve_tv.is_permitted(permissions_encoded):
-                if cls.request not in permissions or cls.request_tv not in permissions:
-                    cls._permission_error(cls.auto_approve_tv, cls.request_tv)
-                permissions.add(cls.auto_approve_tv)
+            if cls.auto_approve_series.is_permitted(permissions_encoded):
+                if cls.request not in permissions or cls.request_series not in permissions:
+                    cls._permission_error(cls.auto_approve_series, cls.request_series)
+                permissions.add(cls.auto_approve_series)
         #
         if cls.auto_approve_4k.is_permitted(permissions_encoded):
             if cls.request_4k not in permissions:
@@ -155,10 +155,10 @@ class Permission(BaseEnum):
                 if cls.request_4k not in permissions or cls.request_4k_movie not in permissions:
                     cls._permission_error(cls.auto_approve_4k_movie, cls.request_4k_movie)
                 permissions.add(cls.auto_approve_4k_movie)
-            if cls.auto_approve_4k_tv.is_permitted(permissions_encoded):
-                if cls.request_4k not in permissions or cls.request_4k_tv not in permissions:
-                    cls._permission_error(cls.auto_approve_4k_tv, cls.request_4k_tv)
-                permissions.add(cls.auto_approve_4k_tv)
+            if cls.auto_approve_4k_series.is_permitted(permissions_encoded):
+                if cls.request_4k not in permissions or cls.request_4k_series not in permissions:
+                    cls._permission_error(cls.auto_approve_4k_series, cls.request_4k_series)
+                permissions.add(cls.auto_approve_4k_series)
         #
         return permissions
 
@@ -180,30 +180,101 @@ class Permission(BaseEnum):
 
 class JellyseerrUsersSettings(JellyseerrConfigBase):
     """
-    Jellyseerr users settings.
+    These settings change the behaviour for how Jellyseerr allows logins
+    from Jellyfin/Plex users, user permissions, and request limits.
+
+    ```yaml
+    jellyseerr:
+      settings:
+        users:
+          enable_local_signin: true
+          enable_new_jellyfin_signin: true
+          global_movie_request_limit: 0
+          global_movie_request_days: 7
+          global_series_request_limit: 0
+          global_series_request_days: 7
+          default_permissions:
+            - "request"
+            - "request-4k"
+    ```
     """
 
     enable_local_signin: bool = True
+    """
+    Allow users to sign in using their email address and password, instead of Plex OAuth.
+    """
 
     enable_new_jellyfin_signin: bool = True
-
-    global_movie_request_limit: int = Field(0, ge=0, le=100, alias="movie_quota_limit")
     """
+    Allow Jellyfin users to sign in without first being imported to Jellyseerr.
+    """
+
+    global_movie_request_limit: int = Field(0, ge=0, le=100)
+    """
+    The maximum number of movie requests within the selected number of days.
+
     0 is unlimited.
     """
 
-    global_movie_request_days: int = Field(7, ge=1, le=100, alias="movie_quota_days")
-
-    global_series_request_limit: int = Field(0, ge=0, le=100, alias="series_quota_limit")
+    global_movie_request_days: int = Field(7, ge=1, le=100)
     """
+    The timespan that applies to the global movie request limit, in days.
+    """
+
+    global_series_request_limit: int = Field(0, ge=0, le=100)
+    """
+    The maximum number of series (TV show) requests within the selected number of days.
+
     0 is unlimited.
     """
 
-    global_series_request_days: int = Field(7, ge=1, le=100, alias="series_quota_days")
-
-    default_permissions: Set[Permission] = {Permission.request, Permission.manage_issues}
+    global_series_request_days: int = Field(7, ge=1, le=100)
     """
-    Get permission names from API schema (no camelCase)
+    The timespan that applies to the global series request limit, in days.
+    """
+
+    default_permissions: Set[Permission] = {Permission.request, Permission.request_4k}
+    """
+    Permissions to grant to newly created users by default.
+
+    Privileged permissions such as `admin`, `manage-users`, `manage-requests`,
+    `auto-approve`, `auto-approve-4k`, and `manage-issues` generally should not be
+    enabled by default.
+
+    Instead, allow specific permissions under that category you wish to grant to new users.
+
+    Values:
+
+    * `admin` - Full administrator access. Bypasses all other permission checks.
+    * `manage-users` - Grant permission to manage users.
+      Users with this permission cannot modify users with or grant the `admin` privilege.
+    * `manage-requests` - Grant permission to manage media requests.
+      All requests made by a user with this permission will be automatically approved.
+        * `request-advanced` - Grant permission to modify advanced media request options.
+        * `request-view` - Grant permission to view media requests submitted by other users.
+        * `recent-view` - Grant permission to view the list of recently added media.
+        * `watchlist-view` - Grant permission to view other users' Plex Watchlists.
+    * `request` - Grant permission to submit requests for non-4K media.
+        * `request-movie` - Grant permission to submit requests for non-4K movies.
+        * `request-series` - Grant permission to submit requests for non-4K series.
+    * `auto-approve` - Grant automatic approval for all non-4K media requests.
+        * `auto-approve-movie` - Grant automatic approval for non-4K movie requests.
+        * `auto-approve-series` - Grant automatic approval for non-4K series requests.
+    * `auto-request` - Grant permission to automatically submit requests for non-4K media
+      via Plex Watchlist.
+        * `auto-request-movie` - Grant permission to automatically submit requests
+          for non-4K movies via Plex Watchlist.
+        * `auto-request-series` - Grant permission to automatically submit requests
+          for non-4K series via Plex Watchlist.
+    * `request-4k` - Grant permission to submit requests for 4K media.
+        * `request-4k-movie` - Grant permission to submit requests for 4K movies.
+        * `request-4k-series` - Grant permission to submit requests for 4K series.
+    * `auto-approve-4k` - Grant automatic approval for all 4K media requests.
+        * `auto-approve-4k-movie` - Grant automatic approval for 4K movie requests.
+        * `auto-approve-4k-series` - Grant automatic approval for 4K series requests.
+    * `manage-issues` - Grant permission to manage media issues.
+        * `view-issues` - Grant permission to report media issues.
+        * `create-issues` - Grant permission to view media issues reported by other users.
     """
 
     @validator("default_permissions")

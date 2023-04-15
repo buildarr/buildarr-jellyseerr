@@ -40,7 +40,7 @@ class WebhookSettings(NotificationTypesSettingsBase):
 
     authorization_header: Optional[SecretStr] = None
 
-    payload_template: NonEmptyStr = "<JSON template>"
+    payload_template: NonEmptyStr = "<JSON template>"  # type: ignore[assignment]
 
     _type: str = "webhook"
     _required_if_enabled: Set[str] = {"webhook_url"}

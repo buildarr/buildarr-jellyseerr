@@ -39,7 +39,6 @@ logger = getLogger(__name__)
 
 
 class JellyseerrJellyfinSettings(JellyseerrConfigBase):
-
     server_url: Optional[str] = None
     """
     Server URL that Jellyseerr will use to communicate with Jellyfin.
