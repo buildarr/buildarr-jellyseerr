@@ -29,18 +29,38 @@ from .notification_types import NotificationTypesSettingsBase
 
 class TelegramSettings(NotificationTypesSettingsBase):
     """
-    Jellyseerr Telegram notifications settings.
+    Send notifications to a group chat in Telegram.
 
-    This service supports setting fine-grained notification types using `notification_types`.
+    If `username` is set, also allows Jellyseerr users to setup their own chats
+    with the Jellyseerr Telegram bot to receive notifications.
     """
 
     access_token: Optional[SecretStr] = None
+    """
+    Access token provided for the Telegram bot by BotFather at the end of the creation process.
+
+    **Required if Telegram notifications are enabled.**
+    """
 
     username: Optional[str] = None
+    """
+    The username of the Telegram bot.
+
+    If this value is configured, Jellyseerr users will be able to click a link to start a chat
+    with your bot and configure their own personal notifications.
+    """
 
     chat_id: Optional[str] = None
+    """
+    Chat ID of the group chat to send messages to.
+
+    **Required if Telegram notifications are enabled.**
+    """
 
     send_silently: bool = False
+    """
+    When set to `true`, sends messages without notification sounds.
+    """
 
     _type: str = "telegram"
     _required_if_enabled: Set[str] = {"access_token", "chat_id"}

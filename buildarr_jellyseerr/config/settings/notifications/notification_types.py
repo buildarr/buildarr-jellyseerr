@@ -47,39 +47,11 @@ class NotificationType(BaseEnum):
 
 
 class NotificationTypesSettingsBase(NotificationsSettingsBase):
-    """
-    Some service types support fine-grained configuration of
-    the type of notifications that get sent.
-
-    This is done by defining the optional `notification_types` configuration attribute
-    in the settings for that service.
-
-    ```yaml
-    jellyseerr:
-      settings:
-        notifications:
-          slack:
-            enable: true
-            webhook_url: "..."
-            notification_types:
-              - "media-pending"
-              - "media-approved"
-              - "media-available"
-              - "media-failed"
-              - "test-notification"
-              - "media-declined"
-              - "media-auto-approved"
-              - "issue-created"
-              - "issue-comment"
-              - "issue-resolved"
-              - "issue-reopened"
-              - "media-auto-requested"
-    ```
-    """
+    # Base class for notification services with configurable notification types.
 
     notification_types: Set[NotificationType] = set()
     """
-    The notification types to send to a service.
+    The notification types to send to the service.
 
     By default no notifications are sent, even if enabled, so remember to set
     the types of events you'd like to get notified for.

@@ -31,8 +31,6 @@ from .notification_types import NotificationTypesSettingsBase
 class WebhookSettings(NotificationTypesSettingsBase):
     """
     Send a custom JSON payload to any endpoint for specific notification events.
-
-    This service supports setting fine-grained notification types using `notification_types`.
     """
 
     webhook_url: Optional[AnyHttpUrl] = None

@@ -36,14 +36,22 @@ class PushoverApiKey(SecretStr):
 
 class PushoverSettings(NotificationTypesSettingsBase):
     """
-    Jellyseerr Pushover notifications settings.
-
-    This service supports setting fine-grained notification types using `notification_types`.
+    Send notifications to one or more devices via Pushover.
     """
 
     api_key: Optional[PushoverApiKey] = None
+    """
+    API key registered for Jellyseerr in Pushover.
+
+    **Required if Pushover notifications are enabled.**
+    """
 
     user_key: Optional[PushoverApiKey] = None
+    """
+    User key to authenticate with on Pushover.
+
+    **Required if Pushover notifications are enabled.**
+    """
 
     _type: str = "pushover"
     _required_if_enabled: Set[str] = {"api_key", "user_key"}

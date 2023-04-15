@@ -114,6 +114,13 @@ class EmailSettings(NotificationsSettingsBase):
     * `starttls-strict` - Require STARTTLS
     * `starttls-prefer` - Use STARTTLS if available, unencrypted fallback (**not recommended**)
     * `none` - No encryption (**not recommended**)
+
+    !!! warning
+
+        The `starttls-prefer` and `none` encryption methods send (or can send)
+        username and password credentials unencrypted over the network.
+
+        **Do not use them unless you know what you are doing.**
     """
 
     smtp_port: Port = 587  # type: ignore[assignment]
@@ -128,11 +135,13 @@ class EmailSettings(NotificationsSettingsBase):
     """
     Allow self-signed certificates for the SMTP server host certificate.
 
-    Generally this option shouldn't be enabled, even on a private mail server,
-    as any mail server can get free TLS certificates using services such as
-    [Let's Encrypt](https://letsencrypt.org).
+    !!! warning
 
-    **Never enable this option when using a public email service.**
+        Generally this option shouldn't be enabled, even on a private mail server,
+        as any mail server can get free TLS certificates using services such as
+        [Let's Encrypt](https://letsencrypt.org).
+
+        **Never enable this option when using a public email service.**
     """
 
     smtp_username: Optional[str] = None

@@ -29,14 +29,21 @@ from .notification_types import NotificationTypesSettingsBase
 
 class PushbulletSettings(NotificationTypesSettingsBase):
     """
-    Jellyseerr Pushbullet notifications settings.
-
-    This service supports setting fine-grained notification types using `notification_types`.
+    Send notifications to one or more devices via Pushbullet.
     """
 
     access_token: Optional[SecretStr] = None
+    """
+    The generated application token for Jellyseerr in Pushbullet.
+
+    **Required if Pushbullet notifications are enabled.**
+    """
 
     channel_tag: Optional[str] = None
+    """
+    Optional [channel tag](https://pushbullet.com/my-channel) for pushing notifications
+    to any devices subscribed to it.
+    """
 
     _type: str = "pushbullet"
     _required_if_enabled: Set[str] = {"access_token"}

@@ -26,7 +26,7 @@ from typing import Any, Dict, List, Mapping, Optional, Set, Union
 
 from buildarr.config import RemoteMapEntry
 from buildarr.state import state
-from buildarr.types import BaseEnum, InstanceName, NonEmptyStr
+from buildarr.types import BaseEnum, InstanceName, NonEmptyStr, Port
 from pydantic import Field, validator
 from typing_extensions import Self
 
@@ -46,9 +46,7 @@ class MinimumAvailability(BaseEnum):
 
 
 class Radarr(ArrBase):
-    """
-    The following configuration attributes are available for an app sync profile.
-    """
+    # Radarr application link for Jellyseerr.
 
     instance_name: Optional[InstanceName] = Field(None, plugin="radarr")
     """
@@ -56,15 +54,44 @@ class Radarr(ArrBase):
     with another Buildarr-defined Radarr instance.
     """
 
+    port: Port = 7878  # type: ignore[assignment]
+    """
+    The communication port that the Radarr server listens on.
+    """
+
     api_key: Optional[ArrApiKey] = None
+    """
+    API key for the Radarr server.
+
+    When not linking to a Buildarr-defined instance using `instance_name`,
+    this attribute is required.
+    """
 
     root_folder: NonEmptyStr
+    """
+    Target root folder to use for movies in Radarr.
+    """
 
     quality_profile: Union[NonEmptyStr, int]
+    """
+    Quality profile to use for movies in Radarr.
+    """
 
     minimum_availability: MinimumAvailability = MinimumAvailability.released
+    """
+    The point of release at which requested movies are added to Radarr.
+
+    Values:
+
+    * `announced`
+    * `in-cinemas`
+    * `released`
+    """
 
     tags: Set[Union[NonEmptyStr, int]] = set()
+    """
+    Tags to assign to movies in Radarr.
+    """
 
     @validator("api_key")
     def required_if_instance_name_not_defined(cls, value: Any, values: Mapping[str, Any]) -> Any:
@@ -244,35 +271,58 @@ class Radarr(ArrBase):
 
 class RadarrSettings(JellyseerrConfigBase):
     """
-    App sync profiles are used to set application syncing configuration
-    with respect to an indexer.
+    Jellyseerr relies on Radarr for tracking, downloading and managing local copies
+    of movies.
 
-    Configure the sync profile in Buildarr:
+    When a request is made for a movie, Jellyseerr will add it to Radarr.
+
+    !!! note
+
+        At the time of release, a Radarr plugin is not yet available for Buildarr.
+
+        Until one is released, an API key must be specified when adding a Radarr instance
+        to Jellyseerr.
+
+    A common usage pattern is having multiple Radarr instances, one for non-4K movies
+    and another for 4K movies:
 
     ```yaml
     jellyseerr:
       settings:
-        sadarr:
+        sonarr:
           delete_unmanaged: false
           definitions:
-            "Standard":
+            "Radarr (HD)":
+              is_default_server: true
+              is_4k_server: false
+              hostname: "localhost"
+              port: 7878
+              use_ssl: false
+              api_key: "..."
+              root_folder: "/data/media/movies/hd"
+              quality_profile: "HD Movies"
+              minimum_availability: "released"
+              tags: []
+              enable_scan: false
               enable_automatic_search: true
-              enable_interactive_search: true
-              enable_rss: true
-              minimum_seeders: 1
+            "Radarr (4K)":
+              is_default_server: true
+              is_4k_server: true
+              hostname: "localhost"
+              port: 7879
+              use_ssl: false
+              api_key: "..."
+              root_folder: "/data/media/movies/4k"
+              quality_profile: "4K Movies"
+              minimum_availability: "released"
+              tags: []
+              enable_scan: false
+              enable_automatic_search: true
     ```
 
-    When the [`sync_profile`](
-    ../indexers/indexers.md#buildarr_prowlarr.config.settings
-    .indexers.indexers.Indexer.sync_profile
-    )
-    attribute on the indexer is set to the name of the
-    sync profile, the applications connected to the indexer will respect
-    the settings defined in the sync profile for that indexer.
-
-    For more information, refer to the guide for
-    [sync profiles](https://wiki.servarr.com/prowlarr/settings#sync-profiles)
-    on WikiArr.
+    For more information on configuring Radarr instances in Jellyseerr, refer to
+    [this guide](https://docs.overseerr.dev/using-overseerr/settings#radarr-sonarr-settings)
+    in the Overseerr documentation.
     """
 
     delete_unmanaged: bool = False

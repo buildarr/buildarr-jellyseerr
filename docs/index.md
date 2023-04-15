@@ -146,7 +146,7 @@ The following sections cover all of the possible configuration attributes for a 
 * Settings
     * [General](configuration/settings/general.md)
     * [Users](configuration/settings/users.md)
-    * [Jellyfin](configuration/jellyfin.md)
+    * [Jellyfin](configuration/settings/jellyfin.md)
     * Services
         * [Sonarr](configuration/settings/services/sonarr.md)
         * [Radarr](configuration/settings/services/radarr.md)
@@ -157,7 +157,7 @@ The following sections cover all of the possible configuration attributes for a 
 Buildarr is capable of dumping a running Jellyseerr instance's configuration.
 
 ```bash
-$ buildarr jellyseerr dump-config http://localhost:9696 > jellyseerr.yml
+$ buildarr jellyseerr dump-config http://localhost:5055 > jellyseerr.yml
 Jellyseerr instance API key: <Paste API key here>
 ```
 

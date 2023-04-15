@@ -33,10 +33,6 @@ from .webpush import WebpushSettings
 
 
 class JellyseerrNotificationsSettings(JellyseerrConfigBase):
-    """
-    Jellyseerr notifications settings.
-    """
-
     discord: DiscordSettings = DiscordSettings()
     email: EmailSettings = EmailSettings()
     gotify: GotifySettings = GotifySettings()

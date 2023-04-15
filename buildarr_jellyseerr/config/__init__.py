@@ -54,6 +54,7 @@ class JellyseerrInstanceConfig(_JellyseerrInstanceConfig):
       hostname: "jellyseerr.example.com"
       port: 5055
       protocol: "http"
+      api_key: "..." # API key is required.
       settings:
         ...
     ```

@@ -30,13 +30,13 @@ from .notification_types import NotificationTypesSettingsBase
 class DiscordSettings(NotificationTypesSettingsBase):
     """
     Send notifications to a Discord server using a webhook URL.
-
-    This service supports setting fine-grained notification types using `notification_types`.
     """
 
     webhook_url: Optional[AnyHttpUrl] = None
     """
     Discord server webhook URL.
+
+    **Required if Discord notifications are enabled.**
     """
 
     username: Optional[str] = None

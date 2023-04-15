@@ -36,7 +36,7 @@ from ..types import JellyseerrConfigBase
 class JellyseerrGeneralSettings(JellyseerrConfigBase):
     """
     These settings adjust the general behaviour for how Jellyseerr
-    is access, and discovers content.
+    is accessed, and discovers content.
 
     ```yaml
     jellyseerr:

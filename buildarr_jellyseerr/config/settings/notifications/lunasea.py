@@ -29,14 +29,22 @@ from .notification_types import NotificationTypesSettingsBase
 
 class LunaseaSettings(NotificationTypesSettingsBase):
     """
-    Jellyseerr LunaSea notifications settings.
-
-    This service supports setting fine-grained notification types using `notification_types`.
+    Send notifications to the LunaSea app.
     """
 
     webhook_url: Optional[AnyHttpUrl] = None
+    """
+    The device- or user based LunaSea webhook URL to send notifications to.
+
+    **Required if LunaSea notifications are enabled.**
+    """
 
     profile_name: Optional[str] = None
+    """
+    The LunaSea profile to send notications to.
+
+    If set to `null`, uses the `default` profile.
+    """
 
     _type: str = "lunasea"
     _required_if_enabled: Set[str] = {"webhook_url"}

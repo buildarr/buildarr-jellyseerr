@@ -8,6 +8,9 @@ plugins:
         python:
           options:
             docstring_style: google
+            show_root_heading: false
+            show_source: false
+            show_bases: false
 
 markdown_extensions:
   - toc:
@@ -25,8 +28,8 @@ nav:
       - Users: "configuration/settings/users.md"
       - Jellyfin: "configuration/settings/jellyfin.md"
       - Services:
-        - Sonarr: "configuration/settings/apps/sonarr.md"
-        - Radarr: "configuration/settings/apps/radarr.md"
+        - Sonarr: "configuration/settings/services/sonarr.md"
+        - Radarr: "configuration/settings/services/radarr.md"
       - Notifications: "configuration/settings/notifications.md"
   - Buildarr: "https://buildarr.github.io"
   - GitHub: "https://github.com/buildarr/buildarr-jellyseerr"

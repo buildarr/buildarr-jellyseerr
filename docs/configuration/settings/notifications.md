@@ -6,23 +6,43 @@ These are not only for Jellyseerr to communicate with the outside world, they ca
 for monitoring since the user can be alerted, by a service of their choice, when
 some kind of event (or problem) occurs.
 
+For more information on configuring push notifications for Jellyseerr, refer to [this guide](https://docs.overseerr.dev/using-overseerr/notifications) in the Overseerr documentation.
+
 ## Enabling notifications
 
 ##### ::: buildarr_jellyseerr.config.settings.notifications.base.NotificationsSettingsBase
     options:
       members:
         - enable
-      show_root_heading: false
-      show_source: false
 
 ## Configuring notification types
 
-##### ::: buildarr_jellyseerr.config.settings.notifications.notification_types.NotificationTypesSettingsBase
-    options:
-      members:
-        - notification_types
-      show_root_heading: false
-      show_source: false
+Some service types support fine-grained configuration of the type of notifications that get sent.
+
+This is done by defining the optional `notification_types` configuration attribute
+in the settings for that service.
+
+```yaml
+jellyseerr:
+  settings:
+    notifications:
+      slack:
+        enable: true
+        webhook_url: "..."
+        notification_types:
+          - "media-pending"
+          - "media-approved"
+          - "media-available"
+          - "media-failed"
+          - "test-notification"
+          - "media-declined"
+          - "media-auto-approved"
+          - "issue-created"
+          - "issue-comment"
+          - "issue-resolved"
+          - "issue-reopened"
+          - "media-auto-requested"
+```
 
 ## Discord
 
@@ -33,8 +53,11 @@ some kind of event (or problem) occurs.
         - username
         - avatar_url
         - enable_mentions
-      show_root_heading: false
-      show_source: false
+
+##### ::: buildarr_jellyseerr.config.settings.notifications.notification_types.NotificationTypesSettingsBase
+    options:
+      members:
+        - notification_types
 
 ## Email
 
@@ -52,8 +75,6 @@ some kind of event (or problem) occurs.
         - smtp_password
         - pgp_private_key
         - pgp_password
-      show_root_heading: false
-      show_source: false
 
 ## Gotify
 
@@ -62,8 +83,11 @@ some kind of event (or problem) occurs.
       members:
         - server_url
         - access_token
-      show_root_heading: false
-      show_source: false
+
+##### ::: buildarr_jellyseerr.config.settings.notifications.notification_types.NotificationTypesSettingsBase
+    options:
+      members:
+        - notification_types
 
 ## LunaSea
 
@@ -72,8 +96,11 @@ some kind of event (or problem) occurs.
       members:
         - webhook_url
         - profile_name
-      show_root_heading: false
-      show_source: false
+
+##### ::: buildarr_jellyseerr.config.settings.notifications.notification_types.NotificationTypesSettingsBase
+    options:
+      members:
+        - notification_types
 
 ## Pushbullet
 
@@ -82,8 +109,11 @@ some kind of event (or problem) occurs.
       members:
         - access_token
         - channel_tag
-      show_root_heading: false
-      show_source: false
+
+##### ::: buildarr_jellyseerr.config.settings.notifications.notification_types.NotificationTypesSettingsBase
+    options:
+      members:
+        - notification_types
 
 ## Pushover
 
@@ -92,8 +122,11 @@ some kind of event (or problem) occurs.
       members:
         - api_key
         - user_key
-      show_root_heading: false
-      show_source: false
+
+##### ::: buildarr_jellyseerr.config.settings.notifications.notification_types.NotificationTypesSettingsBase
+    options:
+      members:
+        - notification_types
 
 ## Slack
 
@@ -101,8 +134,11 @@ some kind of event (or problem) occurs.
     options:
       members:
         - webhook_url
-      show_root_heading: false
-      show_source: false
+
+##### ::: buildarr_jellyseerr.config.settings.notifications.notification_types.NotificationTypesSettingsBase
+    options:
+      members:
+        - notification_types
 
 ## Telegram
 
@@ -113,8 +149,11 @@ some kind of event (or problem) occurs.
         - username
         - chat_id
         - send_silently
-      show_root_heading: false
-      show_source: false
+
+##### ::: buildarr_jellyseerr.config.settings.notifications.notification_types.NotificationTypesSettingsBase
+    options:
+      members:
+        - notification_types
 
 ## Webhook
 
@@ -124,13 +163,12 @@ some kind of event (or problem) occurs.
         - webhook_url
         - authorization_header
         - payload_template
-      show_root_heading: false
-      show_source: false
 
+##### ::: buildarr_jellyseerr.config.settings.notifications.notification_types.NotificationTypesSettingsBase
+    options:
+      members:
+        - notification_types
 
 ## Webpush (Browser Push Notifiations)
 
 ##### ::: buildarr_jellyseerr.config.settings.notifications.webpush.WebpushSettings
-    options:
-      show_root_heading: false
-      show_source: false

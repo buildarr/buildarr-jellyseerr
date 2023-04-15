@@ -26,7 +26,7 @@ from typing import Any, Dict, List, Mapping, Optional, Set, Union
 
 from buildarr.config import RemoteMapEntry
 from buildarr.state import state
-from buildarr.types import InstanceName, NonEmptyStr
+from buildarr.types import InstanceName, NonEmptyStr, Port
 from pydantic import Field, validator
 from typing_extensions import Self
 
@@ -40,9 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 class Sonarr(ArrBase):
-    """
-    The following configuration attributes are available for an app sync profile.
-    """
+    # Sonarr application link for Jellyseerr.
 
     instance_name: Optional[InstanceName] = Field(None, plugin="sonarr")
     """
@@ -50,25 +48,63 @@ class Sonarr(ArrBase):
     with another Buildarr-defined Sonarr instance.
     """
 
+    port: Port = 8989  # type: ignore[assignment]
+    """
+    The communication port that the Sonarr server listens on.
+    """
+
     api_key: Optional[ArrApiKey] = None
+    """
+    API key for the Sonarr server.
+
+    When not linking to a Buildarr-defined instance using `instance_name`,
+    this attribute is required.
+    """
 
     root_folder: NonEmptyStr
+    """
+    Target root folder to use for series in Sonarr.
+    """
 
     quality_profile: Union[NonEmptyStr, int]
+    """
+    Quality profile to use for series in Sonarr.
+    """
 
     language_profile: Union[NonEmptyStr, int]
+    """
+    Quality profile to use for series in Sonarr.
+    """
 
     tags: Set[Union[NonEmptyStr, int]] = set()
+    """
+    Tags to assign to series in Sonarr.
+    """
 
     anime_root_folder: Optional[Union[NonEmptyStr, int]] = None
+    """
+    Target root folder to use for series classified as anime in Sonarr.
+    """
 
     anime_quality_profile: Optional[Union[NonEmptyStr, int]] = None
+    """
+    Quality profile to use for series classified as anime in Sonarr.
+    """
 
     anime_language_profile: Optional[Union[NonEmptyStr, int]] = None
+    """
+    Language profile to use for series classified as anime in Sonarr.
+    """
 
     anime_tags: Set[Union[NonEmptyStr, int]] = set()
+    """
+    Tags to assign to series classified as anime in Sonarr.
+    """
 
     enable_season_folders: bool = False
+    """
+    Sort series into subfolders for each season.
+    """
 
     @validator("api_key")
     def required_if_instance_name_not_defined(cls, value: Any, values: Mapping[str, Any]) -> Any:
@@ -336,35 +372,102 @@ class Sonarr(ArrBase):
 
 class SonarrSettings(JellyseerrConfigBase):
     """
-    App sync profiles are used to set application syncing configuration
-    with respect to an indexer.
+    Jellyseerr relies on Sonarr for tracking, downloading and managing local copies
+    of series (TV shows).
 
-    Configure the sync profile in Buildarr:
+    When a request is made for a series, Jellyseerr will add it to Sonarr.
+
+    !!! note
+
+        At the time of release, Sonarr V4 is
+        [not fully supported](https://github.com/Fallenbagel/jellyseerr/issues/207)
+        by Jellyseerr, as Sonarr V4 does not have language profiles.
+
+        Buildarr does not support linking Jellyseerr instances with Sonarr V4 instances.
+
+    In Buildarr, Jellyseerr can be linked to one or more Sonarr instances via instance links,
+    using the `instance_name` attribute. Jellyseerr can also have non-Buildarr managed Sonarr
+    instances added to it by explicitly defining the API key used to connect to it.
+
+    A common usage pattern is having multiple Sonarr instances, one for non-4K series
+    and another for 4K series:
 
     ```yaml
+    sonarr:
+      settings:
+        language_profiles:
+          definitions:
+            "English":
+              languages:
+                - "English"
+      instances:
+        sonarr-hd:
+          host: "localhost"
+          port: 8989
+          protocol: "http"
+          api_key: "..."
+          settings:
+            media_management:
+              root_folders:
+                - "/data/media/shows/hd"
+            profiles:
+              quality_profiles:
+                definitions:
+                  "HD Series":
+                    ...
+        sonarr-4k:
+          host: "localhost"
+          port: 8990
+          protocol: "http"
+          api_key: "..."
+          settings:
+            media_management:
+              root_folders:
+                - "/data/media/shows/4k"
+            profiles:
+              quality_profiles:
+                definitions:
+                  "4K Series":
+                    ...
+
     jellyseerr:
       settings:
         sonarr:
           delete_unmanaged: false
           definitions:
-            "Standard":
+            "Sonarr (HD)":
+              is_default_server: true
+              is_4k_server: false
+              instance_name: "sonarr-hd"
+              hostname: "localhost"
+              port: 8989
+              use_ssl: false
+              root_folder: "/data/media/shows/hd"
+              quality_profile: "HD Series"
+              language_profile: "English"
+              tags: []
+              enable_season_folders: true
+              enable_scan: false
               enable_automatic_search: true
-              enable_interactive_search: true
-              enable_rss: true
-              minimum_seeders: 1
+            "Sonarr (4K)":
+              is_default_server: true
+              is_4k_server: true
+              instance_name: "sonarr-4k"
+              hostname: "localhost"
+              port: 8990
+              use_ssl: false
+              root_folder: "/data/media/shows/4k"
+              quality_profile: "4K Series"
+              language_profile: "English"
+              tags: []
+              enable_season_folders: true
+              enable_scan: false
+              enable_automatic_search: true
     ```
 
-    When the [`sync_profile`](
-    ../indexers/indexers.md#buildarr_prowlarr.config.settings
-    .indexers.indexers.Indexer.sync_profile
-    )
-    attribute on the indexer is set to the name of the
-    sync profile, the applications connected to the indexer will respect
-    the settings defined in the sync profile for that indexer.
-
-    For more information, refer to the guide for
-    [sync profiles](https://wiki.servarr.com/prowlarr/settings#sync-profiles)
-    on WikiArr.
+    For more information on configuring Sonarr instances in Jellyseerr, refer to
+    [this guide](https://docs.overseerr.dev/using-overseerr/settings#radarr-sonarr-settings)
+    in the Overseerr documentation.
     """
 
     delete_unmanaged: bool = False

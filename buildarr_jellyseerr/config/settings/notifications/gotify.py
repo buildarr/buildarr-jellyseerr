@@ -29,14 +29,22 @@ from .notification_types import NotificationTypesSettingsBase
 
 class GotifySettings(NotificationTypesSettingsBase):
     """
-    Jellyseerr Gotify notifications settings.
-
-    This service supports setting fine-grained notification types using `notification_types`.
+    Send Jellyseerrr notifications to a Gotify server.
     """
 
     server_url: Optional[AnyHttpUrl] = None
+    """
+    The URL that Jellyseerr will use to access the Gotify server.
+
+    **Required if Gotify notifications are enabled.**
+    """
 
     access_token: Optional[SecretStr] = None
+    """
+    The generated application token for Jellyseerr in Gotify.
+
+    **Required if Gotify notifications are enabled.**
+    """
 
     _type: str = "gotify"
     _required_if_enabled: Set[str] = {"server_url", "access_token"}
