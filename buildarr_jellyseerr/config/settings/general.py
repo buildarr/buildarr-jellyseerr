@@ -141,8 +141,8 @@ class JellyseerrGeneralSettings(JellyseerrConfigBase):
             "discover_languages",
             "originalLanguage",
             {
-                "decoder": lambda v: set(ln.strip() for ln in v.split(",")) if v else set(),
-                "encoder": lambda v: ",".join(sorted(v)) if v else "",
+                "decoder": lambda v: set(ln.strip() for ln in v.split("|")) if v else set(),
+                "encoder": lambda v: "|".join(sorted(v)) if v else "",
             },
         ),
         ("discover_region", "region", {}),
