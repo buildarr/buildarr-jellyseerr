@@ -3,11 +3,15 @@
 ##### ::: buildarr_jellyseerr.config.settings.general.JellyseerrGeneralSettings
     options:
       members:
-        - bind_address
-        - port
-        - ssl_port
-        - use_ssl
-        - url_base
-        - instance_name
+        - application_title
+        - application_url
+        - enable_proxy_support
+        - enable_csrf_protection
+        - enable_image_caching
+        - display_language
+        - discover_region
+        - discover_languages
+        - hide_available_media
+        - allow_partial_series_requests
       show_root_heading: false
       show_source: false

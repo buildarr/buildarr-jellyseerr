@@ -35,45 +35,96 @@ from ..types import JellyseerrConfigBase
 
 class JellyseerrGeneralSettings(JellyseerrConfigBase):
     """
-    Jellyseerr general settings.
+    These settings adjust the general behaviour for how Jellyseerr
+    is access, and discovers content.
+
+    ```yaml
+    jellyseerr:
+      settings:
+        general:
+          application_title: "Jellyseerr"
+          application_url: null
+          enable_proxy_support: false
+          enable_csrf_protection: false
+          enable_image_caching: false
+          display_language: "en"
+          discover_region: null
+          discover_languages: []
+          hide_available_media: false
+          allow_partial_series_requests: true
+    ```
     """
 
     application_title: NonEmptyStr = "Jellyseerr"  # type: ignore[assignment]
+    """
+    Name of the Jellyseerr instance, as shown in the browser title.
+    """
 
     application_url: Optional[AnyHttpUrl] = None
+    """
+    Application URL to use when generating links to Jellyseerr.
+
+    If set to `null`, use the URL the browser is currently using to access Jellyseerr.
+    """
 
     enable_proxy_support: bool = False
     """
-    Restart required.
+    Allow Jellyseerr to correctly register client IP addresses behind a proxy.
+
+    When this attribute is changed, a restart of Jellyseerr is required.
     """
 
     enable_csrf_protection: bool = False
     """
-    Restart required.
+    Set external API access to read-only (requires HTTPS).
+
+    When this attribute is changed, a restart of Jellyseerr is required.
     """
 
     enable_image_caching: bool = False
+    """
+    Cache externally sourced images.
+
+    Take care when enabling this option, as this requires a significant amount of disk space.
+    """
 
     display_language: LowerCaseNonEmptyStr = "en"  # type: ignore[assignment]
     """
-    case-insensitive NonEmptyStr, get values from API schema. Two-character English code.
+    The display language of the Jellyseerr UI.
+
+    Use the [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
+    two-character language code when defining this attribute.
     """
 
     discover_region: Optional[UpperCaseStr] = None
     """
-    None is same as "All Regions". Get values from API schema
-    Two-character country code
+    Filter content by regional availability.
+
+    If set to `null`, discovers content for all regions.
+
+    Use the [ISO 3166-1](https://en.wikipedia.org/wiki/List_of_ISO_3166_country_codes)
+    two-character country code when defining this attribute.
     """
 
     discover_languages: Set[LowerCaseStr] = set()
     """
-    Empty is same as "All Languages". Two character lower-case language code.
-    Set[case-insensitive NonEmptyStr], get values from API schema
+    Filter content by original language.
+
+    If empty, discovers all languages.
+
+    Use [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
+    two-character language codes when defining this attribute.
     """
 
     hide_available_media: bool = False
+    """
+    Hide content that is already available in the media library in the UI.
+    """
 
     allow_partial_series_requests: bool = True
+    """
+    Allow making media requests for only part of a series.
+    """
 
     _remote_map: List[RemoteMapEntry] = [
         ("application_title", "applicationTitle", {}),
