@@ -24,7 +24,19 @@ from .base import NotificationsSettingsBase
 
 class WebpushSettings(NotificationsSettingsBase):
     """
-    Jellyseerr browser push notification notifications settings.
+    To send push notifications to your browser, simply enable it in the Buildarr configuration.
+
+    !!! note
+
+        In order to receive web push notifications, Jellyseerr must be served over HTTPS.
+
+    ```yaml
+    jellyseerr:
+      settings:
+        notifications:
+          webpush:
+            enable: true
+    ```
     """
 
     _type: str = "webpush"

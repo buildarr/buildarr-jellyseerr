@@ -124,11 +124,9 @@ some kind of event (or problem) occurs.
 ##### ::: buildarr_jellyseerr.config.settings.notifications.webhook.WebhookSettings
     options:
       members:
-        - type
         - webhook_url
-        - method
-        - username
-        - password
+        - authorization_header
+        - payload_template
       show_root_heading: false
       show_source: false
 
@@ -137,7 +135,5 @@ some kind of event (or problem) occurs.
 
 ##### ::: buildarr_jellyseerr.config.settings.notifications.webpush.WebpushSettings
     options:
-      members:
-        - enable
       show_root_heading: false
       show_source: false

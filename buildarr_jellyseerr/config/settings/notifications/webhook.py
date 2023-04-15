@@ -30,17 +30,31 @@ from .notification_types import NotificationTypesSettingsBase
 
 class WebhookSettings(NotificationTypesSettingsBase):
     """
-    Jellyseerr webhook notifications settings.
+    Send a custom JSON payload to any endpoint for specific notification events.
     """
 
     webhook_url: Optional[AnyHttpUrl] = None
     """
-    Webhook endpoint URL.
+    The webhook URL to post notifications to.
+
+    The rendered payload template will be the body of the request.
     """
 
     authorization_header: Optional[SecretStr] = None
+    """
+    Thie value to be set in the `Authorization` HTTP header.
+
+    This is not always required by the webhook provider.
+    """
 
     payload_template: NonEmptyStr = "<JSON template>"  # type: ignore[assignment]
+    """
+    The template for the JSON payload sent to the webhook URL.
+
+    For help on configuring this option, refer to
+    [this guide](https://docs.overseerr.dev/using-overseerr/notifications/webhooks#json-payload)
+    in the Overseerr documentation.
+    """
 
     _type: str = "webhook"
     _required_if_enabled: Set[str] = {"webhook_url"}
