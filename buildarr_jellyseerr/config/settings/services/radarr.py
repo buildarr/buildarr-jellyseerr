@@ -338,7 +338,7 @@ class RadarrSettings(JellyseerrConfigBase):
     """
 
     @validator("definitions")
-    def only_one_default_instance_per_type(self, value: Dict[str, Radarr]) -> Dict[str, Radarr]:
+    def only_one_default_non4k_instance(self, value: Dict[str, Radarr]) -> Dict[str, Radarr]:
         default_instances: List[str] = []
         for instance_name, instance in value.items():
             if instance.is_default_server and not instance.is_4k_server:
@@ -351,7 +351,7 @@ class RadarrSettings(JellyseerrConfigBase):
         return value
 
     @validator("definitions")
-    def only_one_default_4k_instance_per_type(self, value: Dict[str, Radarr]) -> Dict[str, Radarr]:
+    def only_one_default_4k_instance(self, value: Dict[str, Radarr]) -> Dict[str, Radarr]:
         default_4k_instances: List[str] = []
         for instance_name, instance in value.items():
             if instance.is_default_server and instance.is_4k_server:

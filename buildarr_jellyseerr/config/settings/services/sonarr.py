@@ -483,7 +483,7 @@ class SonarrSettings(JellyseerrConfigBase):
     """
 
     @validator("definitions")
-    def only_one_default_instance_per_type(self, value: Dict[str, Sonarr]) -> Dict[str, Sonarr]:
+    def only_one_default_non4k_instance(self, value: Dict[str, Sonarr]) -> Dict[str, Sonarr]:
         default_instances: List[str] = []
         for instance_name, instance in value.items():
             if instance.is_default_server and not instance.is_4k_server:
@@ -496,7 +496,7 @@ class SonarrSettings(JellyseerrConfigBase):
         return value
 
     @validator("definitions")
-    def only_one_default_4k_instance_per_type(self, value: Dict[str, Sonarr]) -> Dict[str, Sonarr]:
+    def only_one_default_4k_instance(self, value: Dict[str, Sonarr]) -> Dict[str, Sonarr]:
         default_4k_instances: List[str] = []
         for instance_name, instance in value.items():
             if instance.is_default_server and instance.is_4k_server:
