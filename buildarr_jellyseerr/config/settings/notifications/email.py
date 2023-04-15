@@ -243,7 +243,11 @@ class EmailSettings(NotificationsSettingsBase):
             (
                 "smtp_password",
                 "authPass",
-                {"optional": True, "decoder": lambda v: v or None, "encoder": lambda v: v or ""},
+                {
+                    "optional": True,
+                    "decoder": lambda v: v or None,
+                    "encoder": lambda v: v.get_secret_value() if v else "",
+                },
             ),
             (
                 "pgp_private_key",
