@@ -37,19 +37,21 @@ packages = [{include = "buildarr_jellyseerr"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
-buildarr = ">=0.4.2,<0.6.0"
+buildarr = ">=0.4.2,<0.7.0"
 buildarr-sonarr = {version = ">=0.4.1", optional = true}
+buildarr-radarr = {version = ">=0.1.0", optional = true}
 
 [tool.poetry.group.dev.dependencies]
-black = "23.3.0"
-mypy = "1.2.0"
-types-requests = "2.28.11.17"
-mkdocs = "1.4.2"
-mkdocstrings = {extras = ["python"], version = "0.21.2"}
-ruff = "0.0.261"
+black = "23.7.0"
+mypy = "1.5.1"
+types-requests = "2.31.0.2"
+mkdocs = "1.5.2"
+mkdocstrings = {extras = ["python"], version = "0.22.0"}
+ruff = "0.0.287"
 
 [tool.poetry.extras]
 sonarr = ["buildarr-sonarr"]
+radarr = ["buildarr-radarr"]
 
 [tool.ruff]
 fix = true
@@ -88,7 +90,7 @@ extend-ignore = [
     "PLR0912",
     "PLR0913",
     "PLR0915",
-    "RUF001",
+    "RUF012",
 ]
 
 [tool.ruff.isort]

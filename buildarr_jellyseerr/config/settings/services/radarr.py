@@ -209,7 +209,7 @@ class Radarr(ArrBase):
                 raise ValueError(
                     f"Invalid {resource_description} ID {resource_ref} "
                     "(expected one of: "
-                    f"{', '.join(f'{repr(rn)} ({rid})' for rn, rid in resource_ids.items())}"
+                    f"{', '.join(f'{rn!r} ({rid})' for rn, rid in resource_ids.items())}"
                     ")",
                 )
             else:
@@ -219,7 +219,7 @@ class Radarr(ArrBase):
         raise ValueError(
             f"Invalid {resource_description} name '{resource_ref}' "
             f"(expected one of: "
-            f"{', '.join(f'{repr(rn)} ({rid})' for rn, rid in resource_ids.items())}"
+            f"{', '.join(f'{rn!r} ({rid})' for rn, rid in resource_ids.items())}"
             ")",
         )
 
@@ -391,7 +391,7 @@ class RadarrSettings(JellyseerrConfigBase):
         # If it does exist on the remote, attempt an an in-place modification,
         # and set the `changed` flag if modifications were made.
         for service_name, service in self.definitions.items():
-            profile_tree = f"{tree}.definitions[{repr(service_name)}]"
+            profile_tree = f"{tree}.definitions[{service_name!r}]"
             api_key = service._get_api_key()
             api_metadata = service._get_api_metadata(secrets, api_key)
             root_folders: Set[str] = set(
@@ -457,7 +457,7 @@ class RadarrSettings(JellyseerrConfigBase):
         # the existence of the unmanaged definition.
         for service_name, service in remote.definitions.items():
             if service_name not in self.definitions:
-                profile_tree = f"{tree}.definitions[{repr(service_name)}]"
+                profile_tree = f"{tree}.definitions[{service_name!r}]"
                 if self.delete_unmanaged:
                     logger.info("%s: (...) -> (deleted)", profile_tree)
                     service._delete_remote(secrets=secrets, service_id=service_ids[service_name])

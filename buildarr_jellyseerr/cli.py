@@ -76,8 +76,21 @@ def dump_config(url: Url, api_key: str) -> int:
         else (443 if protocol == "https" else 80)
     )
 
-    instance_config = JellyseerrInstanceConfig(hostname=hostname, port=port, protocol=protocol)
-    secrets = JellyseerrSecrets(hostname=hostname, port=port, protocol=protocol, api_key=api_key)
+    instance_config = JellyseerrInstanceConfig(
+        **{  # type: ignore[arg-type]
+            "hostname": hostname,
+            "port": port,
+            "protocol": protocol,
+        },
+    )
+    secrets = JellyseerrSecrets(
+        **{  # type: ignore[arg-type]
+            "hostname": hostname,
+            "port": port,
+            "protocol": protocol,
+            "api_key": api_key,
+        },
+    )
 
     click.echo(
         JellyseerrManager()

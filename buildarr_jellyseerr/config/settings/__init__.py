@@ -30,6 +30,6 @@ from .users import JellyseerrUsersSettings
 class JellyseerrSettings(JellyseerrConfigBase):
     general: JellyseerrGeneralSettings = JellyseerrGeneralSettings()
     jellyfin: JellyseerrJellyfinSettings = JellyseerrJellyfinSettings()
-    users: JellyseerrUsersSettings = JellyseerrUsersSettings()
+    users: JellyseerrUsersSettings = JellyseerrUsersSettings()  # type: ignore[call-arg]
     services: JellyseerrServicesSettings = JellyseerrServicesSettings()
     notifications: JellyseerrNotificationsSettings = JellyseerrNotificationsSettings()

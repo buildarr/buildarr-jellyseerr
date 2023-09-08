@@ -20,7 +20,7 @@ Jellyseerr plugin secrets file model.
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from urllib.parse import urlparse
 
 from buildarr.secrets import SecretsPlugin
@@ -65,7 +65,14 @@ class JellyseerrSecrets(_JellyseerrSecrets):
             if len(hostname_port) > 1
             else (443 if protocol == "https" else 80)
         )
-        return cls(hostname=hostname, port=port, protocol=protocol, api_key=api_key)
+        return cls(
+            **{  # type: ignore[arg-type]
+                "hostname": hostname,
+                "port": port,
+                "protocol": protocol,
+                "api_key": api_key,
+            },
+        )
 
     @classmethod
     def get(cls, config: JellyseerrConfig) -> Self:
@@ -73,7 +80,7 @@ class JellyseerrSecrets(_JellyseerrSecrets):
             hostname=config.hostname,
             port=config.port,
             protocol=config.protocol,
-            api_key=config.api_key,
+            api_key=cast(JellyseerrApiKey, config.api_key),
         )
 
     def test(self) -> bool:
