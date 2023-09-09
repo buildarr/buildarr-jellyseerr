@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 class MinimumAvailability(BaseEnum):
-    accounced = "announced"
+    announced = "announced"
     in_cinemas = "inCinemas"
     released = "released"
 
