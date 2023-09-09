@@ -2,7 +2,7 @@
 
 ## [v0.2.0](https://github.com/buildarr/buildarr-jellyseerr/releases/tag/v0.2.0) - 2023-09-09
 
-This release updates the Prowlarr plugin so that it is compatible with [Buildarr v0.6.0](https://buildarr.github.io/release-notes/#v060-2023-09-02).
+This release updates the Jellyseerr plugin so that it is compatible with [Buildarr v0.6.0](https://buildarr.github.io/release-notes/#v060-2023-09-02).
 
 This version is backwards compatible with all versions of Buildarr supported by v0.1.0 of the plugin.
 
