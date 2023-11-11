@@ -142,9 +142,7 @@ class Radarr(ArrBase):
 
     def _get_api_key(self) -> str:
         if self.instance_name and not self.api_key:
-            return state.secrets.radarr[  # type: ignore[attr-defined]
-                self.instance_name
-            ].api_key.get_secret_value()
+            return state.instance_secrets["radarr"][self.instance_name].api_key.get_secret_value()
         else:
             return self.api_key.get_secret_value()  # type: ignore[union-attr]
 
