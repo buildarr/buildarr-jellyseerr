@@ -23,13 +23,12 @@ from http import HTTPStatus
 from typing import List, Optional, Set
 
 from buildarr.config import RemoteMapEntry
-from buildarr.types import NonEmptyStr
+from buildarr.types import LowerCaseNonEmptyStr, LowerCaseStr, NonEmptyStr, UpperCaseStr
 from pydantic import AnyHttpUrl
 from typing_extensions import Self
 
 from ...api import api_get, api_post
 from ...secrets import JellyseerrSecrets
-from ...types import LowerCaseNonEmptyStr, LowerCaseStr, UpperCaseStr
 from ..types import JellyseerrConfigBase
 
 
