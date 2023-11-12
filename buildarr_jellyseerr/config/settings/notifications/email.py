@@ -71,7 +71,7 @@ class EmailSettings(NotificationsSettingsBase):
     !!! note
 
         If the [`jellyseerr.settings.general.application_url`](
-        ../general/#buildarr_jellyseerr.config.settings.general
+        general.md#buildarr_jellyseerr.config.settings.general
         .JellyseerrGeneralSettings.application_url
         ) attribute is configured, Jellyseerr will explicitly
         set the origin server hostname when connecting to the SMTP host.
