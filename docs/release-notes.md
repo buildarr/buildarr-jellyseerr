@@ -2,7 +2,7 @@
 
 ## [v0.3.0](https://github.com/buildarr/buildarr-jellyseerr/releases/tag/v0.3.0) - 2023-11-12
 
-This updates the Sonarr plugin so that it is compatible with [Buildarr v0.7.0](https://buildarr.github.io/release-notes/#v070-2023-11-12).
+This updates the Jellyseerr plugin so that it is compatible with [Buildarr v0.7.0](https://buildarr.github.io/release-notes/#v070-2023-11-12).
 
 ### Changed
 
