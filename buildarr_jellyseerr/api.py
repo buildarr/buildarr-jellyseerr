@@ -43,16 +43,18 @@ logger = getLogger(__name__)
 def api_get(
     secrets: Union[JellyseerrSecrets, str],
     api_url: str,
-    session: Optional[requests.Session] = None,
+    *,
+    api_key: Optional[str] = None,
     use_api_key: bool = True,
     expected_status_code: HTTPStatus = HTTPStatus.OK,
+    session: Optional[requests.Session] = None,
 ) -> Any:
     """
-    Send a `GET` request to a Jellyseerr instance.
+    Send an API `GET` request.
 
     Args:
-        secrets (Union[JellyseerrSecrets, str]): Jellyseerr secrets metadata, or host URL.
-        api_url (str): Jellyseerr API command.
+        secrets (Union[JellyseerrSecrets, str]): Secrets metadata, or host URL.
+        api_url (str): API command.
         expected_status_code (HTTPStatus): Expected response status. Defaults to `200 OK`.
 
     Returns:
@@ -61,10 +63,14 @@ def api_get(
 
     if isinstance(secrets, str):
         host_url = secrets
-        api_key = None
+        host_api_key = api_key
     else:
         host_url = secrets.host_url
-        api_key = secrets.api_key.get_secret_value() if use_api_key else None
+        host_api_key = secrets.api_key.get_secret_value()
+
+    if not use_api_key:
+        host_api_key = None
+
     url = f"{host_url}/{api_url.lstrip('/')}"
 
     logger.debug("GET %s", url)
@@ -73,10 +79,13 @@ def api_get(
         session = requests.Session()
     res = session.get(
         url,
-        headers={"X-Api-Key": api_key} if api_key else None,
-        timeout=get_request_timeout(),
+        headers={"X-Api-Key": host_api_key} if host_api_key else None,
+        timeout=state.request_timeout,
     )
-    res_json = res.json()
+    try:
+        res_json = res.json()
+    except requests.JSONDecodeError:
+        api_error(method="GET", url=url, response=res)
 
     logger.debug("GET %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
 
@@ -122,10 +131,13 @@ def api_post(
     res = session.post(
         url,
         headers={"X-Api-Key": api_key} if api_key else None,
-        timeout=get_request_timeout(),
+        timeout=state.request_timeout,
         **({"json": req} if req is not None else {}),
     )
-    res_json = res.json()
+    try:
+        res_json = res.json()
+    except requests.JSONDecodeError:
+        api_error(method="POST", url=url, response=res)
 
     logger.debug("POST %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
 
@@ -172,9 +184,12 @@ def api_put(
         url,
         headers={"X-Api-Key": api_key} if api_key else None,
         json=req,
-        timeout=get_request_timeout(),
+        timeout=state.request_timeout,
     )
-    res_json = res.json()
+    try:
+        res_json = res.json()
+    except requests.JSONDecodeError:
+        api_error(method="PUT", url=url, response=res)
 
     logger.debug("PUT %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
 
@@ -215,7 +230,7 @@ def api_delete(
     res = session.delete(
         url,
         headers={"X-Api-Key": api_key} if api_key else None,
-        timeout=get_request_timeout(),
+        timeout=state.request_timeout,
     )
 
     logger.debug("DELETE %s -> status_code=%i", url, res.status_code)
@@ -261,12 +276,4 @@ def api_error(
         except json.JSONDecodeError:
             f"(Non-JSON error response)\n{response.text}"
 
-    raise JellyseerrAPIError(error_message, status_code=response.status_code)
-
-
-def get_request_timeout() -> float:
-    # TODO: Remove this function when `request_timeout` gets added to Buildarr global state.
-    try:
-        return state.config.buildarr.request_timeout
-    except AttributeError:
-        return 30
+    raise JellyseerrAPIError(error_message, status_code=response.status_code) from None

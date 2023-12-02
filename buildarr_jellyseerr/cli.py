@@ -67,6 +67,11 @@ def dump_config(url: Url, api_key: str) -> int:
     The configuration is dumped to standard output in Buildarr-compatible YAML format.
     """
 
+    if not api_key:
+        raise ValueError(
+            "An API key must be provided to authenticate with the Jellyseerr instance",
+        )
+
     protocol = url.scheme
     hostname_port = url.netloc.split(":", 1)
     hostname = hostname_port[0]
@@ -75,21 +80,22 @@ def dump_config(url: Url, api_key: str) -> int:
         if len(hostname_port) == HOSTNAME_PORT_TUPLE_LENGTH
         else (443 if protocol == "https" else 80)
     )
+    url_base = url.path
 
     instance_config = JellyseerrInstanceConfig(
         **{  # type: ignore[arg-type]
             "hostname": hostname,
             "port": port,
             "protocol": protocol,
+            "url_base": url_base,
         },
     )
-    secrets = JellyseerrSecrets(
-        **{  # type: ignore[arg-type]
-            "hostname": hostname,
-            "port": port,
-            "protocol": protocol,
-            "api_key": api_key,
-        },
+    secrets = JellyseerrSecrets.get_from_url(
+        hostname=hostname,
+        port=port,
+        protocol=protocol,
+        url_base=url_base,
+        api_key=api_key,
     )
 
     click.echo(

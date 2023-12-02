@@ -38,3 +38,19 @@ class JellyseerrAPIError(JellyseerrError):
     def __init__(self, msg: str, status_code: int) -> None:
         self.status_code = status_code
         super().__init__(msg)
+
+
+class JellyseerrSecretsError(JellyseerrError):
+    """
+    Jellyseerr plugin secrets exception base class.
+    """
+
+    pass
+
+
+class JellyseerrSecretsUnauthorizedError(JellyseerrSecretsError):
+    """
+    Error raised when Buildarr was unable to authenticate with Jellyseerr.
+    """
+
+    pass
