@@ -34,11 +34,11 @@ repos:
           - buildarr==0.7.0
           - types-requests==2.31.0.10
   - repo: https://github.com/python-poetry/poetry
-    rev: "1.7.0"
+    rev: "1.8.1"
     hooks:
       - id: poetry-check
       - id: poetry-lock
-        args: ["--no-update"]
+        args: ["--no-update", "--no-cache"]
       - id: poetry-export
         additional_dependencies:
           - poetry-plugin-export==1.6.0
