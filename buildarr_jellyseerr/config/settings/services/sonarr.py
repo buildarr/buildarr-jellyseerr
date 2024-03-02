@@ -160,6 +160,7 @@ class Sonarr(ArrBase):
                 "anime_root_folder",
                 "activeAnimeDirectory",
                 {
+                    "optional": True,
                     "decoder": lambda v: v or None,
                     "encoder": lambda v: v or "",
                 },
