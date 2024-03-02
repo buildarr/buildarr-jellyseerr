@@ -4,7 +4,7 @@
 
 This release addresses the following issues:
 
-* Fix an issue where in some cases, reading existing Sonarr instance configuration from a Jellyseerr instance can fail if they do not have any anime-relation configuration defined. In particular, if the anime root folder is not defined, the corresponding API field for it might not be found in the Jellyseerr API response, resulting in an error.
+* Fix an issue where in some cases, reading existing Sonarr instance configuration from a Jellyseerr instance can fail if they do not have any anime-related configuration defined. In particular, if the anime root folder is not defined, the corresponding API field for it might not be found in the Jellyseerr API response, resulting in an error.
 
 ### Changed
 
