@@ -4,8 +4,7 @@
 
 This release addresses the following issues:
 
-* Support defining a URL base for the Jellyseerr instance in the Buildarr configuration, using the `url_base` host configuration attribute.
-    * This allows Jellyseerr instances with APIs available under a custom path (e.g. `http://localhost:5055/jellyseerr`) to be managed by Buildarr.
+* Fix an issue where in some cases, reading existence Sonarr instance configuration from a Jellyseerr instance can fail if they do not have any anime-relation configuration defined. In particular, if the anime root folder is not defined, the corresponding API field for it might not be found in the Jellyseerr API response, resulting in an error.
 
 ### Changed
 
