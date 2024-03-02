@@ -1,5 +1,24 @@
 # Release Notes (Buildarr Jellyseerr Plugin)
 
+## [v0.3.2](https://github.com/buildarr/buildarr-jellyseerr/releases/tag/v0.3.2) - 2024-03-02
+
+This release addresses the following issues:
+
+* Support defining a URL base for the Jellyseerr instance in the Buildarr configuration, using the `url_base` host configuration attribute.
+    * This allows Jellyseerr instances with APIs available under a custom path (e.g. `http://localhost:5055/jellyseerr`) to be managed by Buildarr.
+
+The following issues have also been fixed:
+
+* Return a more helpful error message when the API key is not specified when dumping Jellyseerr instance configurations.
+* Improve error handling when Buildarr was unable to parse a JSON response from the Jellyseerr API.
+* Use the global state attribute for API request timeouts available in newer versions of Buildarr, instead of directly reading it from the Buildarr configuration (and using a hard-coded default if not found).
+
+### Changed
+
+* Update Poetry and lock file ([#24](https://github.com/buildarr/buildarr-jellyseerr/pull/24))
+* Make the Sonarr instance `animeAnimeDirectory` API field optional ([#26](https://github.com/buildarr/buildarr-jellyseerr/pull/26))
+
+
 ## [v0.3.1](https://github.com/buildarr/buildarr-jellyseerr/releases/tag/v0.3.1) - 2023-12-02
 
 This release adds the following new features:
